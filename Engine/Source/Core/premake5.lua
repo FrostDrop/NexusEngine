@@ -3,6 +3,7 @@ project "Core"
 	language "C++"
 	staticruntime "off"
 
+	targetname ("%{wks.name}-%{prj.name}")
 	targetdir (BinaryOutputDirectory)
 	objdir (IntermediateOutputDirectory)
 

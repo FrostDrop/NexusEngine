@@ -1,5 +1,3 @@
-ProjectName = "Nexus"
-
 EngineDirectory = path.getabsolute("Engine/") .. "/"
 SampleDirectory = path.getabsolute("Samples/") .. "/"
 TemplateDirectory = path.getabsolute("Templates/") .. "/"
