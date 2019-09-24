@@ -1,41 +1,32 @@
-outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
-
-project "Nexus"
-	kind "SharedLib"
+project "Sandbox"
+	kind "ConsoleApp"
 	language "C++"
 	staticruntime "off"
 
-	targetdir ("../Binaries/Bin/" .. outputdir)
-	objdir ("../Binaries/Obj/" .. outputdir)
+	targetdir (BinaryOutputDirectory)
+	objdir (IntermediateOutputDirectory)
 
 	files {
 		"premake5.lua",
-		"Source/**.h",
-		"Source/**.cpp"
+
+		"Public/**.h",
+		"Private/**.cpp"
 	}
 
 	includedirs {
-		"Source/**/Public",
-		"Source/Core/**"
+		SourceDirectory .. "**/Public",
+	}
+
+	links {
+		"Core"
 	}
 
 	filter "system:windows"
 		cppdialect "C++17"
 		systemversion "latest"
 
-		links {
-			"OpenGL32"
-		}
-
 		defines {
-			"NEXUS_PLATFORM_WINDOWS",
-			"NEXUS_LIB_TYPE_DLL"
-		}
-
-	filter "system:not windows"
-
-		links {
-			"GL"
+			"NEXUS_PLATFORM_WINDOWS"
 		}
 
 	filter "configurations:Debug"

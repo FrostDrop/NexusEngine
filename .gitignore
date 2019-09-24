@@ -4,7 +4,7 @@
 [Bb]inaries/
 [Dd]ebug/
 [Rr]elease/
-[Oo]bj
+[Ii]ntermediates/
 
 # Intermediate files
 *.obj
