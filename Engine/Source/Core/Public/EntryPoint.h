@@ -5,14 +5,14 @@
 namespace Nexus
 {
 
-	extern Application* CreateApplication();
+	extern FApplication* CreateApplication();
 
 }
 
 
 int main(int argc, char** argv)
 {
-	Nexus::Application* app = Nexus::CreateApplication();
+	Nexus::FApplication* app = Nexus::CreateApplication();
 	app->Run();
 	delete app;
 }

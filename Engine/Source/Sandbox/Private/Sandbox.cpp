@@ -2,25 +2,25 @@
 #include <iostream>
 
 
-class Sandbox : public Nexus::Application
+class FSandbox : public Nexus::FApplication
 {
 
 public:
 
-	Sandbox()
+	FSandbox()
 	{
 		std::cout << "Hello Nexus!" << std::endl;
 	}
 
-	~Sandbox()
+	~FSandbox()
 	{
 		std::cout << "Bye Nexus!" << std::endl;
 	}
 
 };
 
-Nexus::Application* Nexus::CreateApplication()
+Nexus::FApplication* Nexus::CreateApplication()
 {
-	return new Sandbox();
+	return new FSandbox();
 }
 

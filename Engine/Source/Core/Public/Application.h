@@ -6,21 +6,21 @@
 namespace Nexus
 {
 
-	class NEXUS_API Application
+	class NEXUS_API FApplication
 	{
 
 	public:
 
-		Application();
-		virtual ~Application();
+		FApplication();
+		virtual ~FApplication();
 
 		void Run();
 
-		NEXUS_INLINE Application* GetInstance() { return Instance; }
+		NEXUS_INLINE FApplication* GetInstance() { return Instance; }
 
 	private:
 
-		static Application* Instance;
+		static FApplication* Instance;
 
 	};
 

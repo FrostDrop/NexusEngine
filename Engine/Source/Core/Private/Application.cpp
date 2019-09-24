@@ -3,19 +3,19 @@
 namespace Nexus
 {
 
-	Application* Application::Instance = nullptr;
+	FApplication* FApplication::Instance = nullptr;
 
-	Application::Application()
+	FApplication::FApplication()
 	{
 
 	}
 
-	Application::~Application()
+	FApplication::~FApplication()
 	{
 
 	}
 
-	void Application::Run()
+	void FApplication::Run()
 	{
 		
 	}
