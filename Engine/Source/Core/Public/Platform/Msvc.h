@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef _MSC_FULL_VER
-#error This file should only be included on MSVC compiler.
+	#error This file should only be included on MSVC compiler.
 #endif
 
 

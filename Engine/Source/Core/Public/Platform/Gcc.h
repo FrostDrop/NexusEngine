@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef __GNUC__
-#error This file should only be included on GCC compiler.
+	#error This file should only be included on GCC compiler.
 #endif
 
 
