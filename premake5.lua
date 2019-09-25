@@ -2,18 +2,19 @@ EngineDirectory = path.getabsolute("Engine/") .. "/"
 SampleDirectory = path.getabsolute("Samples/") .. "/"
 TemplateDirectory = path.getabsolute("Templates/") .. "/"
 
-
+BuildDirectory = EngineDirectory .. "Build/"
 BinaryDirectory = EngineDirectory .. "Binaries/"
 IntermediateDirectory = EngineDirectory .. "Intermediates/"
-
-BuildDirectory = EngineDirectory .. "Build/"
 
 SourceDirectory = EngineDirectory .. "Source/"
 ShaderDirectory = EngineDirectory .. "Shaders/"
 
-OutputDirectory = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/"
-BinaryOutputDirectory = BinaryDirectory .. OutputDirectory
-IntermediateOutputDirectory = IntermediateDirectory .. OutputDirectory
+RuntimeSourceDirectory = SourceDirectory .. "Runtime/"
+ThirdPartySourceDirectory = SourceDirectory .. "ThirdParty/"
+
+OutputDirectoryName = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/"
+BinaryOutputDirectory = BinaryDirectory .. OutputDirectoryName
+IntermediateOutputDirectory = IntermediateDirectory .. OutputDirectoryName
 
 
 workspace "Nexus"
@@ -26,5 +27,5 @@ workspace "Nexus"
 		"Distribution"
 	}
 
-include (SourceDirectory .. "Core")
-include (SourceDirectory .. "Sandbox")
+include (RuntimeSourceDirectory .. "Core")
+include (RuntimeSourceDirectory .. "Sandbox")

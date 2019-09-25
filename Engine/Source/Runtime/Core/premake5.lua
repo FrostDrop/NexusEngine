@@ -1,5 +1,5 @@
-project "Sandbox"
-	kind "ConsoleApp"
+project "Core"
+	kind "SharedLib"
 	language "C++"
 	staticruntime "off"
 
@@ -15,11 +15,7 @@ project "Sandbox"
 	}
 
 	includedirs {
-		SourceDirectory .. "**/Public",
-	}
-
-	links {
-		"Core"
+		RuntimeSourceDirectory .. "**/Public",
 	}
 
 	filter "system:windows"
@@ -27,7 +23,8 @@ project "Sandbox"
 		systemversion "latest"
 
 		defines {
-			"NEXUS_PLATFORM_WINDOWS"
+			"NEXUS_PLATFORM_WINDOWS",
+			"NEXUS_LIB_TYPE_DLL"
 		}
 
 	filter "configurations:Debug"
