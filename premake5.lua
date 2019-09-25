@@ -29,3 +29,5 @@ workspace "Nexus"
 
 include (RuntimeSourceDirectory .. "Core")
 include (RuntimeSourceDirectory .. "Sandbox")
+
+include (ThirdPartySourceDirectory .. "glfw")
