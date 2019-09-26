@@ -31,3 +31,4 @@ include (RuntimeSourceDirectory .. "Core")
 include (RuntimeSourceDirectory .. "Sandbox")
 
 include (ThirdPartySourceDirectory .. "glfw")
+include (ThirdPartySourceDirectory .. "ImGui")
