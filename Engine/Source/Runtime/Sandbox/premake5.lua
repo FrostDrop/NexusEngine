@@ -20,7 +20,8 @@ project "Sandbox"
 
 	links {
 		"Core",
-		"glfw"
+		"glfw",
+		"ImGui"
 	}
 
 	filter "system:windows"
