@@ -4,3 +4,6 @@
 [submodule "Engine/Source/ThirdParty/ImGui"]
 	path = Engine/Source/ThirdParty/ImGui
 	url = git@github.com:Mexel70/imgui.git
+[submodule "Engine/Source/ThirdParty/glad"]
+	path = Engine/Source/ThirdParty/glad
+	url = git@github.com:Mexel70/glad.git

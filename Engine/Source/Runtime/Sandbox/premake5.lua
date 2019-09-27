@@ -21,6 +21,7 @@ project "Sandbox"
 	links {
 		"Core",
 		"glfw",
+		"glad",
 		"ImGui"
 	}
 
