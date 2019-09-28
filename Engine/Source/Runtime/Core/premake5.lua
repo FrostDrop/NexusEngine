@@ -27,6 +27,18 @@ project "Core"
 			"NEXUS_LIB_TYPE_DLL"
 		}
 
+	filter "system:linux"
+		cppdialect "C++17"
+		systemversion "latest"
+
+		defines {
+			"NEXUS_PLATFORM_LINUX"
+		}
+
+		links {
+			os.findlib("X11")
+		}
+
 	filter "configurations:Debug"
 		defines "NEXUS_DEBUG"
 		runtime "Debug"

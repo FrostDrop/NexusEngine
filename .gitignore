@@ -23,6 +23,10 @@
 *.vcxproj.filters
 *.vcxproj.user
 
+# Makefiles
+
+Makefile
+
 # Exceptions
 
 !Premake*

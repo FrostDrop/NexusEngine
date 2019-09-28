@@ -33,6 +33,14 @@ project "Sandbox"
 			"NEXUS_PLATFORM_WINDOWS"
 		}
 
+	filter "system:linux"
+		cppdialect "C++17"
+		systemversion "latest"
+
+		defines {
+			"NEXUS_PLATFORM_LINUX"
+		}
+
 	filter "configurations:Debug"
 		defines "NEXUS_DEBUG"
 		runtime "Debug"
