@@ -23,3 +23,7 @@
 *.vcxproj.filters
 *.vcxproj.user
 
+# Exceptions
+
+!Premake*
+
