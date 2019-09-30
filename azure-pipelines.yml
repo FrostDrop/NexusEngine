@@ -1,6 +1,12 @@
 
 name: Nexus
 
+resources:
+ repositories:
+ - repository: self
+   checkoutOptions:
+    submodules: true
+
 trigger:
 - master
 
