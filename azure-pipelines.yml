@@ -60,14 +60,14 @@ jobs:
   - task: Bash@3
     inputs:
      targetType: "inline"
-     script: "make Debug"
+     script: "make config=debug"
 
   - task: Bash@3
     inputs:
      targetType: "inline"
-     script: "make Release"
+     script: "make config=release"
 
   - task: Bash@3
     inputs:
      targetType: "inline"
-     script: "make Distribution"
+     script: "make config=distribution"
