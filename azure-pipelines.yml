@@ -7,10 +7,14 @@ resources:
     submodules: true
 
 trigger:
-- master
+ branches:
+  include:
+  - master
+  - development
+  - feature/*
 
 jobs:
-- job: Nexus
+- job: Windows
   pool:
    vmImage: 'windows-latest'
 
@@ -24,13 +28,46 @@ jobs:
      solution: "Nexus.sln"
      msbuildVersion: "latest"
      msbuildArchitecture: "x64"
+     configuration: "Debug"
+
+  - task: MSBuild@1
+    inputs:
+     solution: "Nexus.sln"
+     msbuildVersion: "latest"
+     msbuildArchitecture: "x64"
+     configuration: "Release"
+
+  - task: MSBuild@1
+    inputs:
+     solution: "Nexus.sln"
+     msbuildVersion: "latest"
+     msbuildArchitecture: "x64"
      configuration: "Distribution"
 
+- job: Linux
+  pool:
+   vmImage: "ubuntu-latest"
 
+  steps:
+  - task: ShellScript@2
+    inputs:
+     scriptPath: "Setup.sh"
 
+  - task: ShellScript@2
+    inputs:
+     scriptPath: "GenerateProjectFiles.sh"
 
+  - task: Bash@3
+    inputs:
+     targetType: "inline"
+     script: "make config=debug"
 
+  - task: Bash@3
+    inputs:
+     targetType: "inline"
+     script: "make config=release"
 
-
-
-
+  - task: Bash@3
+    inputs:
+     targetType: "inline"
+     script: "make config=distribution"
