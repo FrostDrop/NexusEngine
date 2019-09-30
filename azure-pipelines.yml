@@ -14,7 +14,7 @@ trigger:
   - feature/*
 
 jobs:
-- job: "Nexus Windows Build"
+- job: Windows
   pool:
    vmImage: 'windows-latest'
 
@@ -44,7 +44,7 @@ jobs:
      msbuildArchitecture: "x64"
      configuration: "Distribution"
 
-- job: "Nexus Linux Build"
+- job: Linux
   pool:
    vmImage: "ubuntu-latest"
 
