@@ -11,6 +11,7 @@ trigger:
   include:
   - master
   - development
+  - feature/*
 
 jobs:
 - job: "Nexus Windows Build"
