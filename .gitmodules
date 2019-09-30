@@ -1,9 +1,9 @@
 [submodule "Engine/Source/ThirdParty/glfw"]
 	path = Engine/Source/ThirdParty/glfw
-	url = git@github.com:Mexel70/glfw.git
+	url = https://github.com/Mexel70/glfw.git
 [submodule "Engine/Source/ThirdParty/ImGui"]
 	path = Engine/Source/ThirdParty/ImGui
-	url = git@github.com:Mexel70/imgui.git
+	url = https://github.com/Mexel70/imgui.git
 [submodule "Engine/Source/ThirdParty/glad"]
 	path = Engine/Source/ThirdParty/glad
-	url = git@github.com:Mexel70/glad.git
+	url = https://github.com/Mexel70/glad.git
