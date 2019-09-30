@@ -1,0 +1,36 @@
+name: Nexus
+
+resources:
+ repositories:
+ - repository: self
+   checkoutOptions:
+    submodules: true
+
+trigger:
+- master
+
+jobs:
+- job: Nexus
+  pool:
+   vmImage: 'windows-latest'
+
+  steps:
+  - task: BatchScript@1
+    inputs:
+     filename: "GenerateProjectFiles.bat"
+
+  - task: MSBuild@1
+    inputs:
+     solution: "Nexus.sln"
+     msbuildVersion: "latest"
+     msbuildArchitecture: "x64"
+     configuration: "Distribution"
+
+
+
+
+
+
+
+
+
