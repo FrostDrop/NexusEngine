@@ -16,7 +16,7 @@ jobs:
    vmImage: 'windows-latest'
 
   steps:
-  - task: InstallSSH@Key0
+  - task: InstallSSHKey@0
     inputs:
      knownHostsEntry: "github.com"
      sshPublicKey: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCVVBHdkU4kCC7HvN9tYO9kVaJjO3YHLiITCIa7+KDLzL6gJmSALeSu/dVrXXMclkkmJCzaNT8UCiKcXThib0zWSYT7KpiDULZgy93TbM155g3J5sFhAia3onaioyPLXNVO4gVjBwdWNsYrGKhlvMHad6eiO3PmUB+aI4LZfkybZV5GiFCUEAVCWhSQqZB4kwwRRVwosg0A34ulLRzG+0BiFBfkNM1/WHYPLbthZDgWX05UP28M7uvV8dTBTuGVQZsfK+Zz70Lx05tmdJbBmx2xvWpd6n+93wi4le+iYeAmnnRfbEzijRaLoU5upKBfvp7qtzSiA6T7X636Or/hQHYH"
