@@ -20,10 +20,12 @@ jobs:
 
   steps:
   - task: BatchScript@1
+    displayName: Generate Project Files
     inputs:
      filename: "GenerateProjectFiles.bat"
 
   - task: MSBuild@1
+    displayName: Debug Build
     inputs:
      solution: "Nexus.sln"
      msbuildVersion: "latest"
@@ -31,6 +33,7 @@ jobs:
      configuration: "Debug"
 
   - task: MSBuild@1
+    displayName: Release Build
     inputs:
      solution: "Nexus.sln"
      msbuildVersion: "latest"
@@ -38,6 +41,7 @@ jobs:
      configuration: "Release"
 
   - task: MSBuild@1
+    displayName: Distribution Build
     inputs:
      solution: "Nexus.sln"
      msbuildVersion: "latest"
