@@ -54,24 +54,29 @@ jobs:
 
   steps:
   - task: ShellScript@2
+    displayName: Setup
     inputs:
      scriptPath: "Setup.sh"
 
   - task: ShellScript@2
+    displayName: Generate Project Files
     inputs:
      scriptPath: "GenerateProjectFiles.sh"
 
   - task: Bash@3
+    displayName: Debug Build
     inputs:
      targetType: "inline"
      script: "make config=debug"
 
   - task: Bash@3
+    displayName: Release Build
     inputs:
      targetType: "inline"
      script: "make config=release"
 
   - task: Bash@3
+    displayName: Distribution Build
     inputs:
      targetType: "inline"
      script: "make config=distribution"
