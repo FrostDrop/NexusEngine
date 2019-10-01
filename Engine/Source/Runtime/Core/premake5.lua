@@ -32,11 +32,12 @@ project "Core"
 		systemversion "latest"
 
 		defines {
-			"NEXUS_PLATFORM_LINUX"
+			"NEXUS_PLATFORM_LINUX",
+			"NEXUS_LIB_TYPE_DLL"
 		}
 
 		links {
-			os.findlib("X11")
+			"X11"
 		}
 
 	filter "configurations:Debug"
