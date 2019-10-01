@@ -25,10 +25,16 @@
 	#else
 		#define NEXUS_API __declspec(dllimport)
 	#endif
+#elif defined NEXUS_COMPILER_GCC
+	#ifdef NEXUS_LIB_TYPE_DLL
+		#define NEXUS_API
+	#else
+		#define NEXUS_API
+	#endif
 #else
 	#ifdef NEXUS_LIB_TYPE_DLL
-		#define NEXUS_API __attribte__((dllexport))
+		#define NEXUS_API
 	#else
-		#define NEXUS_API __attribute__((dllimport))
+		#define NEXUS_API
 	#endif
 #endif
