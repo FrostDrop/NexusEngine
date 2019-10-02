@@ -102,7 +102,7 @@ jobs:
      scheme: ''
      sdk: "macos"
      configuration: "Debug"
-     xcWorkspacePath: "**/*.xcodeproj/project.xcworkspace"
+     xcWorkspacePath: "**/*.xcodeproj/Nexus.xcworkspace"
      xcodeVersion: "default"
      signingOption: "default"
      useXcpretty: "false"
