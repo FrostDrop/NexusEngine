@@ -80,3 +80,30 @@ jobs:
     inputs:
      targetType: "inline"
      script: "make config=distribution"
+
+  - job: Mac
+    pool: 
+     vmImage: "macOS-latest"
+
+    steps:
+    - task: ShellScript@2
+      displayName: Setup
+      inputs:
+       scriptPath: "Setup.command"
+
+    - task: ShellScript@2
+      displayName: Generate Project Files
+      inputs:
+       scriptPath: "GenerateProjectFiles.command"
+
+    - task: Xcode@5
+      inputs:
+       actions: 'build'
+       scheme: ''
+       sdk: "macos"
+       configuration: "Debug"
+       xcWorkspacePath: "**/*.xcodeproj/project.xcworkspace"
+       xcodeVersion: "default"
+       signingOption: "default"
+       useXcpretty: "false"
+
