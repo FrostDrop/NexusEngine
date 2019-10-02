@@ -99,7 +99,6 @@ jobs:
   - task: Xcode@5
     inputs:
      actions: 'build'
-     scheme: ''
      sdk: "macos"
      configuration: "Debug"
      xcWorkspacePath: "Nexus.xcworkspace"
