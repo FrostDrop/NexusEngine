@@ -103,7 +103,7 @@ jobs:
      sdk: "macos"
      configuration: "Debug"
      xcWorkspacePath: "Nexus.xcworkspace"
-     xcodeVersion: "4"
+     xcodeVersion: "default"
      signingOption: "default"
      useXcpretty: "false"
 
