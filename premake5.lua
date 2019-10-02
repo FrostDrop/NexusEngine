@@ -27,12 +27,8 @@ workspace "Nexus"
 		"Distribution"
 	}
 
-group "Engine/Runtime"
-
 include (RuntimeSourceDirectory .. "Core")
 include (RuntimeSourceDirectory .. "Sandbox")
-
-group "Engine/ThirdParty"
 
 include (ThirdPartySourceDirectory .. "glfw")
 include (ThirdPartySourceDirectory .. "glad")
