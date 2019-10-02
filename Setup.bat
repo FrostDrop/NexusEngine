@@ -1,3 +1,3 @@
 @echo off
-echo Done
+echo Done.
 pause
