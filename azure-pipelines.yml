@@ -104,6 +104,7 @@ jobs:
 
   - task: Xcode@5
     inputs:
+     sdk: "macosx"
      actions: "build"
      scheme: "Sandbox"
      configuration: "Debug"
