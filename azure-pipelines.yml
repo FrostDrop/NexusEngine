@@ -92,9 +92,9 @@ jobs:
      scriptPath: "Setup.command"
 
   - task: ShellScript@2
-     displayName: Generate Project Files
-     inputs:
-      scriptPath: "GenerateProjectFiles.command"
+    displayName: Generate Project Files
+    inputs:
+     scriptPath: "GenerateProjectFiles.command"
 
   - task: Xcode@5
     inputs:
