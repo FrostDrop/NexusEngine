@@ -96,6 +96,12 @@ jobs:
     inputs:
      scriptPath: "GenerateProjectFiles.command"
 
+  - task: Bash@3
+    displayName: XCode SDKs
+    inputs:
+     targetType: "inline"
+     script: "xcodebuild -showsdks"
+
   - task: Xcode@5
     inputs:
      actions: "build"
