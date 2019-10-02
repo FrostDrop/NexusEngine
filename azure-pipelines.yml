@@ -98,9 +98,8 @@ jobs:
 
   - task: Xcode@5
     inputs:
-     actions: 'build'
+     actions: "build"
      scheme: "Sandbox"
-     sdk: "macos"
      configuration: "Debug"
      xcWorkspacePath: "Nexus.xcworkspace"
      xcodeVersion: "default"
