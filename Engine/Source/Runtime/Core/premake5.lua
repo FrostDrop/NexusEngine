@@ -19,8 +19,8 @@ project "Core"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
 		systemversion "latest"
+		cppdialect "C++17"
 
 		defines {
 			"NEXUS_PLATFORM_WINDOWS",
@@ -28,8 +28,8 @@ project "Core"
 		}
 
 	filter "system:linux"
-		cppdialect "C++17"
 		systemversion "latest"
+		cppdialect "C++17"
 
 		defines {
 			"NEXUS_PLATFORM_LINUX",
@@ -38,6 +38,14 @@ project "Core"
 
 		links {
 			"X11"
+		}
+
+	filter "system:macosx"
+		systemversion "latest"
+		cppdialect "C++17"
+
+		defines {
+			"NEXUS_PLATFORM_MAC"
 		}
 
 	filter "configurations:Debug"
