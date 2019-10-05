@@ -96,18 +96,37 @@ jobs:
     inputs:
      scriptPath: "GenerateProjectFiles.command"
 
-  - task: Bash@3
-    displayName: XCode SDKs
-    inputs:
-     targetType: "inline"
-     script: "xcodebuild -showsdks"
-
   - task: Xcode@5
+    displayName: Debug Build
     inputs:
      sdk: "macosx"
      actions: "build"
      scheme: "Sandbox"
      configuration: "Debug"
+     xcWorkspacePath: "Nexus.xcworkspace"
+     xcodeVersion: "default"
+     signingOption: "default"
+     useXcpretty: "false"
+
+  - task: Xcode@5
+    displayName: Release Build
+    inputs:
+     sdk: "macosx"
+     actions: "build"
+     scheme: "Sandbox"
+     configuration: "Release"
+     xcWorkspacePath: "Nexus.xcworkspace"
+     xcodeVersion: "default"
+     signingOption: "default"
+     useXcpretty: "false"
+
+  - task: Xcode@5
+    displayName: Distribution Build
+    inputs:
+     sdk: "macosx"
+     actions: "build"
+     scheme: "Sandbox"
+     configuration: "Distribution"
      xcWorkspacePath: "Nexus.xcworkspace"
      xcodeVersion: "default"
      signingOption: "default"
