@@ -80,3 +80,55 @@ jobs:
     inputs:
      targetType: "inline"
      script: "make config=distribution"
+
+- job: Mac
+  pool: 
+   vmImage: "macOS-latest"
+
+  steps:
+  - task: ShellScript@2
+    displayName: Setup
+    inputs:
+     scriptPath: "Setup.command"
+
+  - task: ShellScript@2
+    displayName: Generate Project Files
+    inputs:
+     scriptPath: "GenerateProjectFiles.command"
+
+  - task: Xcode@5
+    displayName: Debug Build
+    inputs:
+     sdk: "macosx"
+     actions: "build"
+     scheme: "Sandbox"
+     configuration: "Debug"
+     xcWorkspacePath: "Nexus.xcworkspace"
+     xcodeVersion: "default"
+     signingOption: "default"
+     useXcpretty: "false"
+
+  - task: Xcode@5
+    displayName: Release Build
+    inputs:
+     sdk: "macosx"
+     actions: "build"
+     scheme: "Sandbox"
+     configuration: "Release"
+     xcWorkspacePath: "Nexus.xcworkspace"
+     xcodeVersion: "default"
+     signingOption: "default"
+     useXcpretty: "false"
+
+  - task: Xcode@5
+    displayName: Distribution Build
+    inputs:
+     sdk: "macosx"
+     actions: "build"
+     scheme: "Sandbox"
+     configuration: "Distribution"
+     xcWorkspacePath: "Nexus.xcworkspace"
+     xcodeVersion: "default"
+     signingOption: "default"
+     useXcpretty: "false"
+
