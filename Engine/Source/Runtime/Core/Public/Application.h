@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Platform/Platform.h"
+#include "HAL/Platform.h"
 
 
 namespace Nexus
 {
 
-	class NEXUS_API FApplication
+	class CORE_API FApplication
 	{
 
 	public:
@@ -14,9 +14,9 @@ namespace Nexus
 		FApplication();
 		virtual ~FApplication();
 
-		void Run();
+		virtual void Run();
 
-		NEXUS_INLINE FApplication* GetInstance() { return Instance; }
+		FORCEINLINE FApplication* GetInstance() { return Instance; }
 
 	private:
 
