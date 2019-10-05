@@ -36,10 +36,6 @@ project "Core"
 			"NEXUS_LIB_TYPE_DLL"
 		}
 
-		links {
-			"X11"
-		}
-
 	filter "system:macosx"
 		systemversion "latest"
 		cppdialect "C++17"
