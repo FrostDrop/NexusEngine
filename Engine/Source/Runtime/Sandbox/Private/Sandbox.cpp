@@ -12,9 +12,14 @@ public:
 		std::cout << "Hello Nexus!" << std::endl;
 	}
 
-	~FSandbox()
+	virtual ~FSandbox()
 	{
 		std::cout << "Bye Nexus!" << std::endl;
+	}
+
+	virtual void Run() override
+	{
+
 	}
 
 };
