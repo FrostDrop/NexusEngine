@@ -24,7 +24,7 @@ project "Core"
 
 		defines {
 			"NEXUS_PLATFORM_WINDOWS",
-			"NEXUS_LIB_TYPE_DLL"
+			"NEXUS_BUILD_DLL"
 		}
 
 	filter "system:linux"
@@ -33,7 +33,7 @@ project "Core"
 
 		defines {
 			"NEXUS_PLATFORM_LINUX",
-			"NEXUS_LIB_TYPE_DLL"
+			"NEXUS_BUILD_DLL"
 		}
 
 	filter "system:macosx"
@@ -41,7 +41,8 @@ project "Core"
 		cppdialect "C++17"
 
 		defines {
-			"NEXUS_PLATFORM_MAC"
+			"NEXUS_PLATFORM_MAC",
+			"NEXUS_BUILD_DLL"
 		}
 
 	filter "configurations:Debug"
