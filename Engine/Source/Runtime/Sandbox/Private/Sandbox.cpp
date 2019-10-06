@@ -1,26 +1,38 @@
-#include "Nexus.h"
 #include <iostream>
 
+#include "Core.h"
 
-class FSandbox : public Nexus::FApplication
+
+namespace Nexus
 {
 
-public:
-
-	FSandbox()
+	class FSandbox : public FApplication
 	{
-		std::cout << "Hello Nexus!" << std::endl;
+
+	public:
+
+		FSandbox()
+		{
+			std::cout << "Hello Nexus!" << std::endl;
+		}
+
+		virtual ~FSandbox()
+		{
+			std::cout << "Bye Nexus!" << std::endl;
+		}
+
+		virtual void Run() override
+		{
+			
+		}
+
+	};
+
+	FApplication* CreateApplication()
+	{
+		return new FSandbox();
 	}
 
-	~FSandbox()
-	{
-		std::cout << "Bye Nexus!" << std::endl;
-	}
-
-};
-
-Nexus::FApplication* Nexus::CreateApplication()
-{
-	return new FSandbox();
 }
+
 
