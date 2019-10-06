@@ -414,7 +414,7 @@ namespace Nexus
 		 *
 		 * @return true if there are any non-finite values in this vector, false otherwise.
 		 */
-		bool ContainsNaN() const;
+		FORCEINLINE bool ContainsNaN() const;
 
 	};
 
