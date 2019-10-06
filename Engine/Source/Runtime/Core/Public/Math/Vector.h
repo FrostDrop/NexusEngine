@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cassert>
+
 #include "HAL/Platform.h"
 #include "Math/MathUtility.h"
 
@@ -39,23 +41,23 @@ namespace Nexus
 		/** One vector (1,1,1) */
 		static CORE_API const FVector OneVector;
 
-		/** Unreal up vector (0,0,1) */
+		/** Nexus up vector (0,0,1) */
 		static CORE_API const FVector UpVector;
 
-		/** Unreal down vector (0,0,-1) */
+		/** Nexus down vector (0,0,-1) */
 		static CORE_API const FVector DownVector;
 
-		/** Unreal forward vector (1,0,0) */
+		/** Nexus forward vector (1,0,0) */
 		static CORE_API const FVector ForwardVector;
 
-		/** Unreal backward vector (-1,0,0) */
+		/** Nexus backward vector (-1,0,0) */
 		static CORE_API const FVector BackwardVector;
 
-		/** Unreal right vector (0,1,0) */
-		static CORE_API const FVector RightVector;
-
-		/** Unreal left vector (0,-1,0) */
+		/** Nexus left vector (0,-1,0) */
 		static CORE_API const FVector LeftVector;
+
+		/** Nexus right vector (0,1,0) */
+		static CORE_API const FVector RightVector;
 
 	public:
 
@@ -63,7 +65,7 @@ namespace Nexus
 
 		FORCEINLINE void DiagnosticCheckNaN() const
 		{
-			if (ContainsNan())
+			if (ContainsNaN())
 			{
 				// TODO: Log message
 				assert(false);
@@ -234,7 +236,7 @@ namespace Nexus
 		 * @param Tolerance Error tolerance.
 		 * @return true if the vectors are equal within tolerance limits, false otherwise.
 		 */
-		FORCEINLINE bool Equals(const FVector& V, float Tolerance = 1.e-4f) const;
+		FORCEINLINE bool Equals(const FVector& V, float Tolerance = KINDA_SMALL_NUMBER) const;
 
 		/**
 		 * Get a negated copy of the vector.
@@ -267,7 +269,7 @@ namespace Nexus
 		 * @param V What to multiply this vector with.
 		 * @return Copy of the vector after multiplication.
 		 */
-		FVector operator*=(const FVector& V);
+		FORCEINLINE FVector operator*=(const FVector& V);
 
 		/**
 		 * Scales the vector.
@@ -283,7 +285,7 @@ namespace Nexus
 		 * @param V What to divide vector by.
 		 * @return Copy of the vector after division.
 		 */
-		FVector operator/=(const FVector& V);
+		FORCEINLINE FVector operator/=(const FVector& V);
 
 		/**
 		 * Divides the vector by a number.
@@ -291,7 +293,119 @@ namespace Nexus
 		 * @param V What to divide this vector by.
 		 * @return Copy of the vector after division.
 		 */
-		FVector operator/=(float V);
+		FORCEINLINE FVector operator/=(float V);
+
+	public:
+
+		/**
+		 * Set the values of the vector directly.
+		 *
+		 * @param InX New X coordinate.
+		 * @param InY New Y coordinate.
+		 * @param InZ New Z coordinate.
+		 */
+		FORCEINLINE void Set(float InX, float InY, float InZ);
+
+		/**
+		 * Get the maximum value of the vector's components.
+		 *
+		 * @return The maximum value of the vector's components.
+		 */
+		FORCEINLINE float GetMax() const;
+
+		/**
+		 * Get the maximum absolute value of the vector's components.
+		 *
+		 * @return The maximum absolute value of the vector's components.
+		 */
+		FORCEINLINE float GetAbsMax() const;
+
+		/**
+		 * Get the minimum value of the vector's components.
+		 *
+		 * @return The minimum value of the vector's components.
+		 */
+		FORCEINLINE float GetMin() const;
+
+		/**
+		 * Get the minimum absolute value of the vector's components.
+		 *
+		 * @return The minimum absolute value of the vector's components.
+		 */
+		FORCEINLINE float GetAbsMin() const;
+
+		/**
+		 * Get a copy of this vector with absolute value of each component.
+		 *
+		 * @return A copy of this vector with absolute value of each component.
+		 */
+		FORCEINLINE FVector GetAbs() const;
+
+		/**
+		 * Get the length (magnitude) of this vector.
+		 *
+		 * @return The length of this vector.
+		 */
+		FORCEINLINE float Size() const;
+
+		/**
+		 * Get the squared length of this vector.
+		 *
+		 * @return The squared length of this vector.
+		 */
+		FORCEINLINE float SizeSquared() const;
+
+		/**
+		 * Checks whether vector is normalized.
+		 *
+		 * @return true if normalized, false otherwise.
+		 */
+		FORCEINLINE bool IsNormalized() const;
+
+		/**
+		 * Normalize this vector in-place if it is larger than a given tolerance. Leaves it unchanged if not.
+		 *
+		 * @param Tolerance Minimum squared length of vector for normalization.
+		 * @return true if the vector was normalized correctly, false otherwise.
+		 */
+		FORCEINLINE bool Normalize(float Tolerance = SMALL_NUMBER);
+
+		/**
+		 * Calculates normalized version of vector without checking for zero length.
+		 *
+		 * @return Normalized version of vector.
+		 * @see GetSafeNormal()
+		 */
+		FORCEINLINE FVector GetUnsafeNormal() const;
+
+		/**
+		 * Gets a normalized copy of the vector, checking it is safe to do so based on the length.
+		 * Returns zero vector if vector length is too small to safely normalize.
+		 *
+		 * @param Tolerance Minimum squared vector length.
+		 * @return A normalized copy if safe, (0,0,0) otherwise.
+		 */
+		FORCEINLINE FVector GetSafeNormal(float Tolerance = SMALL_NUMBER) const;
+
+	public:
+
+		/**
+		 * Euclidean distance between two points.
+		 *
+		 * @param V1 The first point.
+		 * @param V2 The second point.
+		 * @return The distance between two points.
+		 */
+		static FORCEINLINE float Distance(const FVector& V1, const FVector& V2);
+
+		/**
+		 * Squared distance between two points.
+		 *
+		 * @param V1 The first point.
+		 * @param V2 The second point.
+		 * @return The squared distance between two points.
+		 */
+		static FORCEINLINE float DistanceSquared(const FVector& V1, const FVector& V2);
 
 	public:
 
@@ -454,14 +568,108 @@ namespace Nexus
 		return *this;
 	}
 
+	FORCEINLINE void FVector::Set(float InX, float InY, float InZ)
+	{
+		X = InX;
+		Y = InY;
+		Z = InZ;
+		DiagnosticCheckNaN();
+	}
+
+	FORCEINLINE float FVector::GetMax() const
+	{
+		return FMath::Max(FMath::Max(X, Y), Z);
+	}
+
+	FORCEINLINE float FVector::GetAbsMax() const
+	{
+		return FMath::Max(FMath::Max(FMath::Abs(X), FMath::Abs(Y)), FMath::Abs(Z));
+	}
+
+	FORCEINLINE float FVector::GetMin() const
+	{
+		return FMath::Min(FMath::Min(X, Y), Z);
+	}
+
+	FORCEINLINE float FVector::GetAbsMin() const
+	{
+		return FMath::Min(FMath::Min(FMath::Abs(X), FMath::Abs(Y)), FMath::Abs(Z));
+	}
+
+	FORCEINLINE FVector FVector::GetAbs() const
+	{
+		return FVector(FMath::Abs(X), FMath::Abs(Y), FMath::Abs(Z));
+	}
+
+	FORCEINLINE float FVector::Size() const
+	{
+		return FMath::Sqrt(X * X + Y * Y + Z * Z);
+	}
+
+	FORCEINLINE float FVector::SizeSquared() const
+	{
+		return X * X + Y * Y + Z * Z;
+	}
+
+	FORCEINLINE bool FVector::IsNormalized() const
+	{
+		return (FMath::Abs(1.f - SizeSquared()) < THRESHOLD_VECTOR_NORMALIZED);
+	}
+
+	FORCEINLINE bool FVector::Normalize(float Tolerance)
+	{
+		const float SquareSum = X * X + Y * Y + Z * Z;
+		if (SquareSum > Tolerance)
+		{
+			const float Scale = FMath::InvSqrt(SquareSum);
+			X *= Scale; Y *= Scale; Z *= Scale;
+
+			return true;
+		}
+
+		return false;
+	}
+
+	FORCEINLINE FVector FVector::GetUnsafeNormal() const
+	{
+		const float Scale = FMath::InvSqrt(X * X + Y * Y + Z * Z);
+		return FVector(X * Scale, Y * Scale, Z * Scale);
+	}
+
+	FORCEINLINE FVector FVector::GetSafeNormal(float Tolerance) const
+	{
+		const float SquareSum = X * X + Y * Y + Z * Z;
+
+		// Not sure if it's safe to add tolerance in there. Might introduce too many errors.
+		if (SquareSum == 1.f)
+		{
+			return *this;
+		}
+		else if (SquareSum < Tolerance)
+		{
+			return FVector::ZeroVector;
+		}
+
+		const float Scale = FMath::InvSqrt(SquareSum);
+		return FVector(X * Scale, Y * Scale, Z * Scale);
+	}
+
+	FORCEINLINE float FVector::Distance(const FVector& V1, const FVector& V2)
+	{
+		return FMath::Sqrt(FVector::DistanceSquared(V1, V2));
+	}
+
+	FORCEINLINE float FVector::DistanceSquared(const FVector& V1, const FVector& V2)
+	{
+		return FMath::Square(V2.X - V1.X) + FMath::Square(V2.Y - V1.Y) + FMath::Square(V2.Z - V1.Z);
+	}
+
 	FORCEINLINE bool FVector::ContainsNaN() const
 	{
-		return
-		(
-			!FMath::IsFinite(X) ||
+		return (!FMath::IsFinite(X) ||
 			!FMath::IsFinite(Y) ||
-			!FMath::IsFinite(Z)
-		);
+			!FMath::IsFinite(Z));
 	}
+
 
 }
