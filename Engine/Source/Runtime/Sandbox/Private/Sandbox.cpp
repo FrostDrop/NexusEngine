@@ -1,5 +1,6 @@
-#include "Nexus.h"
 #include <iostream>
+
+#include "Core.h"
 
 
 class FSandbox : public Nexus::FApplication
@@ -19,7 +20,7 @@ public:
 
 	virtual void Run() override
 	{
-
+		
 	}
 
 };

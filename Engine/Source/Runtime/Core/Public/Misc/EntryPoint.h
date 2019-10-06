@@ -14,5 +14,7 @@ int main(int argc, char** argv)
 {
 	Nexus::FApplication* app = Nexus::CreateApplication();
 	app->Run();
+
 	delete app;
+	return 0;
 }
