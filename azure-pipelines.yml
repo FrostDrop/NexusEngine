@@ -56,7 +56,7 @@ jobs:
   - task: CmdLine@2
     displayName: Create Distribution Directory
     inputs:
-      script: "mkdir $(Build.ArtifactStagingDirectory)/Windows"
+      script: "mkdir $(Build.ArtifactStagingDirectory)\\Windows\\"
 
   - task: CopyFiles@2
     displayName: Copy Binary Files
@@ -107,7 +107,7 @@ jobs:
     displayName: Create Distribution Directory
     inputs:
      targetType: "inline"
-     script: "mkdir $(Build.ArtifactStagingDirectory)/Linux"
+     script: "mkdir $(Build.ArtifactStagingDirectory)/Linux/"
 
   - task: CopyFiles@2
     displayName: Copy Binary Files
@@ -176,7 +176,7 @@ jobs:
     displayName: Create Distribution Directory
     inputs:
      targetType: "inline"
-     script: "mkdir $(Build.ArtifactStagingDirectory)/Mac"
+     script: "mkdir $(Build.ArtifactStagingDirectory)/Mac/"
 
   - task: CopyFiles@2
     displayName: Copy Binary Files
