@@ -53,6 +53,24 @@ jobs:
      msbuildArchitecture: "x64"
      configuration: "Distribution"
 
+  - task: CmdLine@2
+    displayName: Create Distribution Directory
+    inputs:
+      script: "mkdir $(Build.ArtifactStagingDirectory)\\Windows\\"
+
+  - task: CopyFiles@2
+    displayName: Copy Binary Files
+    inputs:
+      contents: "Engine/Binaries/Distribution-*/?(*.exe|*.dll)"
+      targetFolder: "$(Build.ArtifactStagingDirectory)/Windows/"
+      flattenFolders: true
+    
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Binary Files
+    inputs:
+      pathtoPublish: "$(Build.ArtifactStagingDirectory)/Windows/"
+      artifactName: "Windows Distribution"
+
 - job: Linux
   pool:
    vmImage: "ubuntu-latest"
@@ -85,6 +103,32 @@ jobs:
     inputs:
      targetType: "inline"
      script: "make config=distribution"
+
+  - task: Bash@3
+    displayName: Create Distribution Directory
+    inputs:
+     targetType: "inline"
+     script: "mkdir $(Build.ArtifactStagingDirectory)/Linux/"
+
+  - task: CopyFiles@2
+    displayName: Copy Binary Files
+    inputs:
+      contents: "Engine/Binaries/Distribution-*/!(*.*)"
+      targetFolder: "$(Build.ArtifactStagingDirectory)/Linux/"
+      flattenFolders: true
+
+  - task: CopyFiles@2
+    displayName: Copy Binary Files
+    inputs:
+      contents: "Engine/Binaries/Distribution-*/?(*.so)"
+      targetFolder: "$(Build.ArtifactStagingDirectory)/Linux/"
+      flattenFolders: true
+    
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Binary Files
+    inputs:
+      pathtoPublish: "$(Build.ArtifactStagingDirectory)/Linux/"
+      artifactName: "Linux Distribution"
 
 - job: Mac
   pool: 
@@ -136,4 +180,30 @@ jobs:
      xcodeVersion: "default"
      signingOption: "default"
      useXcpretty: "false"
+
+  - task: Bash@3
+    displayName: Create Distribution Directory
+    inputs:
+     targetType: "inline"
+     script: "mkdir $(Build.ArtifactStagingDirectory)/Mac/"
+
+  - task: CopyFiles@2
+    displayName: Copy Binary Files
+    inputs:
+      contents: "Engine/Binaries/Distribution-*/!(*.*)"
+      targetFolder: "$(Build.ArtifactStagingDirectory)/Mac/"
+      flattenFolders: true
+
+  - task: CopyFiles@2
+    displayName: Copy Binary Files
+    inputs:
+      contents: "Engine/Binaries/Distribution-*/?(*.dylib)"
+      targetFolder: "$(Build.ArtifactStagingDirectory)/Mac/"
+      flattenFolders: true
+    
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Binary Files
+    inputs:
+      pathtoPublish: "$(Build.ArtifactStagingDirectory)/Mac/"
+      artifactName: "Mac Distribution"
 
