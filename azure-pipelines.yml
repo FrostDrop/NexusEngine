@@ -53,6 +53,18 @@ jobs:
      msbuildArchitecture: "x64"
      configuration: "Distribution"
 
+  - task: CopyFiles@2
+    displayName: Copy Binary Files
+    inputs:
+      contents: "**/Nexus/Binaries/Distribution-*/?(*.exe|*.dll)"
+      targetFolder: "$(Build.ArtifactStagingDirectory)/Windows/"
+    
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Binary Files
+    inputs:
+      pathtoPublish: "$(Build.ArtifactStagingDirectory)/Windows/"
+      artifactName: "Windows Distribution"
+
 - job: Linux
   pool:
    vmImage: "ubuntu-latest"
@@ -85,6 +97,18 @@ jobs:
     inputs:
      targetType: "inline"
      script: "make config=distribution"
+
+  - task: CopyFiles@2
+    displayName: Copy Binary Files
+    inputs:
+      contents: "**/Nexus/Binaries/Distribution-*/?(*.exe|*.dll)"
+      targetFolder: "$(Build.ArtifactStagingDirectory)/Linux/"
+    
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Binary Files
+    inputs:
+      pathtoPublish: "$(Build.ArtifactStagingDirectory)/Linux/"
+      artifactName: "Linux Distribution"
 
 - job: Mac
   pool: 
@@ -136,4 +160,16 @@ jobs:
      xcodeVersion: "default"
      signingOption: "default"
      useXcpretty: "false"
+
+  - task: CopyFiles@2
+    displayName: Copy Binary Files
+    inputs:
+      contents: "**/Nexus/Binaries/Distribution-*/?(*.exe|*.dll)"
+      targetFolder: "$(Build.ArtifactStagingDirectory)/Mac/"
+    
+  - task: PublishBuildArtifacts@1
+    displayName: Publish Binary Files
+    inputs:
+      pathtoPublish: "$(Build.ArtifactStagingDirectory)/Mac/"
+      artifactName: "Mac Distribution"
 
