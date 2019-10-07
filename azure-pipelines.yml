@@ -20,6 +20,11 @@ jobs:
 
   steps:
   - task: BatchScript@1
+    displayName: Setup
+    inputs:
+     filename: "Setup.bat"
+
+  - task: BatchScript@1
     displayName: Generate Project Files
     inputs:
      filename: "GenerateProjectFiles.bat"
