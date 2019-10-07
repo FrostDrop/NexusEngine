@@ -61,9 +61,7 @@ jobs:
   - task: CopyFiles@2
     displayName: Copy Binary Files
     inputs:
-      contents: |
-        "Engine/Binaries/Distribution-*/?(*.exe)"
-        "Engine/Binaries/Distribution-*/?(*.dll)"
+      contents: "Engine/Binaries/Distribution-*/?(*.exe|*.dll)"
       targetFolder: "$(Build.ArtifactStagingDirectory)/Windows/"
       flattenFolders: true
     
@@ -115,9 +113,7 @@ jobs:
   - task: CopyFiles@2
     displayName: Copy Binary Files
     inputs:
-      contents: |
-        "Engine/Binaries/Distribution-*/!(*.*)"
-        "Engine/Binaries/Distribution-*/?(*.so)"
+      contents: "Engine/Binaries/Distribution-*/!(*.*)?(*.so)"
       targetFolder: "$(Build.ArtifactStagingDirectory)/Linux/"
       flattenFolders: true
     
@@ -187,9 +183,7 @@ jobs:
   - task: CopyFiles@2
     displayName: Copy Binary Files
     inputs:
-      contents: |
-        "Engine/Binaries/Distribution-*/!(*.*)"
-        "Engine/Binaries/Distribution-*/?(*.dylib)"
+      contents: "Engine/Binaries/Distribution-*/!(*.*)?(*.dylib)"
       targetFolder: "$(Build.ArtifactStagingDirectory)/Mac/"
       flattenFolders: true
     
