@@ -53,6 +53,11 @@ jobs:
      msbuildArchitecture: "x64"
      configuration: "Distribution"
 
+  - task: CmdLine@2
+    displayName: Create Distribution Directory
+    inputs:
+      script: "mkdir $(Build.ArtifactStagingDirectory)/Windows/"
+
   - task: CopyFiles@2
     displayName: Copy Binary Files
     inputs:
@@ -97,6 +102,12 @@ jobs:
     inputs:
      targetType: "inline"
      script: "make config=distribution"
+
+  - task: Bash@3
+    displayName: Create Distribution Directory
+    inputs:
+     targetType: "inline"
+     script: "mkdir $(Build.ArtifactStagingDirectory)/Linux/"
 
   - task: CopyFiles@2
     displayName: Copy Binary Files
@@ -160,6 +171,12 @@ jobs:
      xcodeVersion: "default"
      signingOption: "default"
      useXcpretty: "false"
+
+  - task: Bash@3
+    displayName: Create Distribution Directory
+    inputs:
+     targetType: "inline"
+     script: "mkdir $(Build.ArtifactStagingDirectory)/Mac/"
 
   - task: CopyFiles@2
     displayName: Copy Binary Files
