@@ -61,7 +61,7 @@ jobs:
   - task: CopyFiles@2
     displayName: Copy Binary Files
     inputs:
-      sourceFolder: "Engine/Binaries/Distribution-*/"
+      sourceFolder: "**/Engine/Binaries/Distribution-*/"
       contents: "?(*.exe|*.dll)"
       targetFolder: "$(Build.ArtifactStagingDirectory)/Windows/"
     
@@ -113,7 +113,7 @@ jobs:
   - task: CopyFiles@2
     displayName: Copy Binary Files
     inputs:
-      sourceFolder: "Engine/Binaries/Distribution-*/"
+      sourceFolder: "**/Engine/Binaries/Distribution-*/"
       contents: "?(*.exe|*.dll)"
       targetFolder: "$(Build.ArtifactStagingDirectory)/Linux/"
     
@@ -183,7 +183,7 @@ jobs:
   - task: CopyFiles@2
     displayName: Copy Binary Files
     inputs:
-      sourceFolder: "Engine/Binaries/Distribution-*/"
+      sourceFolder: "**/Engine/Binaries/Distribution-*/"
       contents: "?(*.exe|*.dll)"
       targetFolder: "$(Build.ArtifactStagingDirectory)/Mac/"
     
