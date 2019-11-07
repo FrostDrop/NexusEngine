@@ -11,7 +11,7 @@ namespace Nexus
 	struct FGenericPlatformMath
 	{
 
-		/** Computes absolute value in a generic way */
+		/** Computes absolute value in a generic way. */
 		template< class T >
 		static constexpr FORCEINLINE T Abs(const T A)
 		{
@@ -38,7 +38,7 @@ namespace Nexus
 			return sqrtf(Value); 
 		}
 
-		/** Computes a fully accurate inverse square root */
+		/** Computes a fully accurate inverse square root. */
 		static FORCEINLINE float InvSqrt(float F)
 		{
 			return 1.0f / sqrtf(F);

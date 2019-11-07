@@ -17,8 +17,8 @@ namespace Nexus
 	};
 
 	/**
-	* A vector in 3-D space composed of components (X, Y, Z) with floating point precision.
-	*/
+	 * A vector in 3-D space composed of components (X, Y, Z) with floating point precision.
+	 */
 	struct FVector
 	{
 
@@ -35,28 +35,28 @@ namespace Nexus
 
 	public:
 
-		/** A zero vector (0,0,0) */
+		/** A zero vector (0, 0, 0) */
 		static CORE_API const FVector ZeroVector;
 
-		/** One vector (1,1,1) */
+		/** One vector (1, 1, 1) */
 		static CORE_API const FVector OneVector;
 
-		/** Nexus up vector (0,0,1) */
+		/** Nexus up vector (0, 0, 1) */
 		static CORE_API const FVector UpVector;
 
-		/** Nexus down vector (0,0,-1) */
+		/** Nexus down vector (0, 0, -1) */
 		static CORE_API const FVector DownVector;
 
-		/** Nexus forward vector (1,0,0) */
+		/** Nexus forward vector (1, 0, 0) */
 		static CORE_API const FVector ForwardVector;
 
-		/** Nexus backward vector (-1,0,0) */
+		/** Nexus backward vector (-1, 0, 0) */
 		static CORE_API const FVector BackwardVector;
 
-		/** Nexus left vector (0,-1,0) */
+		/** Nexus left vector (0, -1, 0) */
 		static CORE_API const FVector LeftVector;
 
-		/** Nexus right vector (0,1,0) */
+		/** Nexus right vector (0 ,1, 0) */
 		static CORE_API const FVector RightVector;
 
 	public:

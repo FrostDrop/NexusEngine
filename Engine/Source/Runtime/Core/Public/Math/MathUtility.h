@@ -28,7 +28,7 @@ namespace Nexus
 	struct FMath : public FPlatformMath
 	{
 
-		/** Multiples value by itself. */
+		/** Multiplies value by itself. */
 		template< class T >
 		static FORCEINLINE T Square(const T A)
 		{
