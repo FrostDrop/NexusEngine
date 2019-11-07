@@ -4,6 +4,8 @@ project "Sandbox"
 	staticruntime "off"
 
 	targetname ("%{wks.name}-%{prj.name}")
+	targetprefix ("")
+
 	targetdir (BinaryOutputDirectory)
 	objdir (IntermediateOutputDirectory)
 
