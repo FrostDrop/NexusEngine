@@ -48,4 +48,20 @@ namespace Nexus
 	#define CORE_API DLLIMPORT
 #endif
 
+/** Inlining. */
+#ifndef FORCEINLINE
+	#define FORCEINLINE
+#endif
+#ifndef FORCENOINLINE
+	#define FORCENOINLINE
+#endif
+
+/** Alignment. */
+#ifndef GCC_ALIGN
+	#define GCC_ALIGN(n)
+#endif
+#ifndef MS_ALIGN
+	#define MS_ALIGN(n)
+#endif
+
 

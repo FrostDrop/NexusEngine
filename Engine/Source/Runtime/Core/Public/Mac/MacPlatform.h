@@ -25,3 +25,6 @@ namespace Nexus
 /** DLL definitions. */
 #define DLLIMPORT
 #define DLLEXPORT
+
+/** Alignment. */
+#define GCC_ALIGN(n) __attribute__((aligned(n)))
