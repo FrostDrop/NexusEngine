@@ -277,7 +277,7 @@ namespace Nexus
 	public:
 
 #if PLATFORM_LITTLE_ENDIAN
-#ifdef _MSC_VER
+	#ifdef _MSC_VER
 		union
 		{
 
@@ -291,12 +291,14 @@ namespace Nexus
 
 			uint32 AlignmentDummy;
 		};
+	#else
+		uint8 B alignas(4);
+		uint8 G alignas(4);
+		uint8 R alignas(4);
+		uint8 A alignas(4);
+	#endif
+
 #else
-		uint8 alignas(4) B;
-		uint8 alignas(4) G;
-		uint8 alignas(4) R;
-		uint8 alignas(4) A;
-#endif
 		union
 		{
 			struct
