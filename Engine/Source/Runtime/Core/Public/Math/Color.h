@@ -292,10 +292,10 @@ namespace Nexus
 			uint32 AlignmentDummy;
 		};
 #else
-		uint8 B GCC_ALIGN(4);
-		uint8 G;
-		uint8 R;
-		uint8 A;
+		uint8 alignas(4) B;
+		uint8 alignas(4) G;
+		uint8 alignas(4) R;
+		uint8 alignas(4) A;
 #endif
 		union
 		{
