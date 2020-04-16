@@ -56,6 +56,14 @@ namespace Nexus
 			return 1.0f / sqrtf(F);
 		}
 
+		/**
+		 * Computes A^B.
+		 */
+		static FORCEINLINE float Pow(float A, float B) 
+		{ 
+			return powf(A, B); 
+		}
+
 	};
 
 }

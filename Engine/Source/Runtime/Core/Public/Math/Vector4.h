@@ -3,7 +3,7 @@
 
 #include <cassert>
 
-#include "HAL/Platform.h"
+#include "CoreTypes.h"
 
 #include "Math/MathUtility.h"
 #include "Math/Vector.h"
@@ -14,7 +14,7 @@ namespace Nexus
 	/**
 	 * A 4D homogeneous vector, 4x1 FLOATs, 16-byte aligned.
 	 */
-	MS_ALIGN(16) struct FVector4
+	struct alignas(16) FVector4
 	{
 
 	public:
@@ -397,7 +397,7 @@ namespace Nexus
 
 
 
-	} GCC_ALIGN(16);
+	};
 
 	/** Inline functions. */
 

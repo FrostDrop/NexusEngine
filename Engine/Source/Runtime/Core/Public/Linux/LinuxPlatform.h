@@ -26,5 +26,5 @@ namespace Nexus
 #define DLLIMPORT __attribute__((visibility("default")))
 #define DLLEXPORT __attribute__((visibility("default")))
 
-/** Alignment. */
-#define GCC_ALIGN(n) __attribute__((aligned(n)))
+/** Base defines. */
+#define PLATFORM_LITTLE_ENDIAN 1

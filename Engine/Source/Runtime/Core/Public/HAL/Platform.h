@@ -56,12 +56,9 @@ namespace Nexus
 	#define FORCENOINLINE
 #endif
 
-/** Alignment. */
-#ifndef GCC_ALIGN
-	#define GCC_ALIGN(n)
-#endif
-#ifndef MS_ALIGN
-	#define MS_ALIGN(n)
+/** Base defines. */
+#ifndef PLATFORM_LITTLE_ENDIAN
+	#define PLATFORM_LITTLE_ENDIAN 0
 #endif
 
 
