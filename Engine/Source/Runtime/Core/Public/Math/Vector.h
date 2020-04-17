@@ -2,19 +2,12 @@
 
 #include <cassert>
 
-#include "HAL/Platform.h"
+#include "CoreTypes.h"
 #include "Math/MathUtility.h"
 
 
 namespace Nexus
 {
-
-	enum EForceInit : uint8
-	{
-
-		ForceInit = 0
-
-	};
 
 	/**
 	 * A vector in 3-D space composed of components (X, Y, Z) with floating point precision.

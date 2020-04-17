@@ -48,4 +48,17 @@ namespace Nexus
 	#define CORE_API DLLIMPORT
 #endif
 
+/** Inlining. */
+#ifndef FORCEINLINE
+	#define FORCEINLINE
+#endif
+#ifndef FORCENOINLINE
+	#define FORCENOINLINE
+#endif
+
+/** Base defines. */
+#ifndef PLATFORM_LITTLE_ENDIAN
+	#define PLATFORM_LITTLE_ENDIAN 0
+#endif
+
 

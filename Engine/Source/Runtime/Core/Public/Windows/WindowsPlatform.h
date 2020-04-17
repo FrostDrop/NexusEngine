@@ -20,3 +20,6 @@ namespace Nexus
 /** DLL definitions. */
 #define DLLIMPORT __declspec(dllimport)
 #define DLLEXPORT __declspec(dllexport)
+
+/** Bas defines. */
+#define PLATFORM_LITTLE_ENDIAN 1

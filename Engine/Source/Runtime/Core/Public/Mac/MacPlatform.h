@@ -25,3 +25,6 @@ namespace Nexus
 /** DLL definitions. */
 #define DLLIMPORT
 #define DLLEXPORT
+
+/** Base defines. */
+#define PLATFORM_LITTLE_ENDIAN 1
