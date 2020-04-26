@@ -31,6 +31,8 @@ project "Sandbox"
 		systemversion "latest"
 		cppdialect "C++17"
 
+		vectorextensions "SSE3"
+
 		defines {
 			"NEXUS_PLATFORM_WINDOWS"
 		}
@@ -38,7 +40,8 @@ project "Sandbox"
 	filter "system:linux"
 		systemversion "latest"
 		cppdialect "C++17"
-		optimize "On"
+
+		vectorextensions "SSE3"
 
 		defines {
 			"NEXUS_PLATFORM_LINUX"
@@ -47,6 +50,8 @@ project "Sandbox"
 	filter "system:macosx"
 		systemversion "latest"
 		cppdialect "C++17"
+
+		vectorextensions "SSE3"
 
 		defines {
 			"NEXUS_PLATFORM_MAC"
