@@ -147,7 +147,8 @@ namespace Nexus
         return _mm_add_ps(Vec1, Vec2);
     }
 
-    FORCEINLINE VectorRegister VectorHorizontalAdd(const VectorRegister& Vec1, const VectorRegister& Vec2)
+    // This is only marked with inline, because GCC cannot inline this vector intrinsic function.
+    inline VectorRegister VectorHorizontalAdd(const VectorRegister& Vec1, const VectorRegister& Vec2)
     {
         return _mm_hadd_ps(Vec1, Vec2);
     }
