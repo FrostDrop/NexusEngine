@@ -14,7 +14,12 @@ namespace Nexus
 }
 
 /** Inline definitions. */
-#define FORCEINLINE __forceinline
+#if NEXUS_DEBUG
+	#define FORCEINLINE inline
+#else
+	#define FORCEINLINE __forceinline
+#endif
+
 #define FORCENOINLINE __declspec(noinline)
 
 /** DLL definitions. */
