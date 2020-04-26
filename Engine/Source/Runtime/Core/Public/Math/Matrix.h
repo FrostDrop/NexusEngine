@@ -148,39 +148,13 @@ namespace Nexus
 
 	FMatrix FMatrix::GetInverse() const
 	{
-		// TODO: Not correct yet!
 		FMatrix Result;
-
-		//VectorRegister R0 = VectorShuffle0101(V[0], V[1]);
-		//VectorRegister R1 = VectorShuffle2323(V[0], V[1]);
-
-		//Result.V[0] = VectorShuffle(R0, V[2], 0, 2, 0, 3);
-		//Result.V[1] = VectorShuffle(R0, V[2], 1, 3, 1, 3);
-		//Result.V[2] = VectorShuffle(R1, V[2], 0, 2, 2, 3);
-
-		//VectorRegister SizeSquared;
-		//SizeSquared = VectorMultiply(Result.V[0], Result.V[0]);
-		//SizeSquared = VectorAdd(SizeSquared, VectorMultiply(Result.V[1], Result.V[1]));
-		//SizeSquared = VectorAdd(SizeSquared, VectorMultiply(Result.V[2], Result.V[2]));
-
-		//Result.V[3] = VectorMultiply(Result.V[0], VectorSwizzle(V[3], 0, 0, 0, 0));
-		//Result.V[3] = VectorAdd(Result.V[3], VectorMultiply(Result.V[1], VectorSwizzle(V[3], 1, 1, 1, 1)));
-		//Result.V[3] = VectorAdd(Result.V[3], VectorMultiply(Result.V[2], VectorSwizzle(V[3], 2, 2, 2, 2)));
-		//Result.V[3] = VectorSubtract(MakeVectorRegister(0.0f, 0.0f, 0.0f, 1.0f), Result.V[3]);
-
 
 		VectorRegister A = VectorShuffle0101(V[0], V[1]);
 		VectorRegister B = VectorShuffle2323(V[0], V[1]);
 		VectorRegister C = VectorShuffle0101(V[2], V[3]);
 		VectorRegister D = VectorShuffle2323(V[2], V[3]);
 
-#if 0
-		__m128 detA = _mm_set1_ps(inM.m[0][0] * inM.m[1][1] - inM.m[0][1] * inM.m[1][0]);
-		__m128 detB = _mm_set1_ps(inM.m[0][2] * inM.m[1][3] - inM.m[0][3] * inM.m[1][2]);
-		__m128 detC = _mm_set1_ps(inM.m[2][0] * inM.m[3][1] - inM.m[2][1] * inM.m[3][0]);
-		__m128 detD = _mm_set1_ps(inM.m[2][2] * inM.m[3][3] - inM.m[2][3] * inM.m[3][2]);
-#else
-		// determinant as (|A| |B| |C| |D|)
 		VectorRegister DetSub = VectorSubtract(
 			VectorMultiply(VectorShuffle(V[0], V[2], 0, 2, 0, 2), VectorShuffle(V[1], V[3], 1, 3, 1, 3)),
 			VectorMultiply(VectorShuffle(V[0], V[2], 1, 3, 1, 3), VectorShuffle(V[1], V[3], 0, 2, 0, 2))
@@ -190,17 +164,50 @@ namespace Nexus
 		VectorRegister DetB = VectorSwizzle(DetSub, 1, 1, 1, 1);
 		VectorRegister DetC = VectorSwizzle(DetSub, 2, 2, 2, 2);
 		VectorRegister DetD = VectorSwizzle(DetSub, 3, 3, 3, 3);
-#endif
 
+		VectorRegister DC = VectorSubtract(
+			VectorMultiply(VectorSwizzle(D, 3, 3, 0, 0), C),
+			VectorMultiply(VectorSwizzle(D, 1, 1, 2, 2), VectorSwizzle(C, 2, 3, 0, 1))
+		);
 
-		VectorRegister DC = VectorSubtract(VectorMultiply(VectorSwizzle(D, 3, 3, 0, 0), C), VectorMultiply(VectorSwizzle(D, 1, 1, 2, 2), VectorSwizzle(C, 2, 3, 0, 1)));
-		VectorRegister AB = VectorSubtract(VectorMultiply(VectorSwizzle(A, 3, 3, 0, 0), B), VectorMultiply(VectorSwizzle(A, 1, 1, 2, 2), VectorSwizzle(B, 2, 3, 0, 1)));
-		VectorRegister X = VectorSubtract(VectorMultiply(DetD, A), VectorAdd(VectorMultiply(B, VectorSwizzle(DC, 0, 3, 0, 3)), VectorMultiply(VectorSwizzle(B, 1, 0, 3, 2), VectorSwizzle(DC, 2, 1, 2, 1))));
-		VectorRegister W = VectorSubtract(VectorMultiply(DetA, D), VectorAdd(VectorMultiply(C, VectorSwizzle(AB, 0, 3, 0, 3)), VectorMultiply(VectorSwizzle(C, 1, 0, 3, 2), VectorSwizzle(AB, 2, 1, 2, 1))));
+		VectorRegister AB = VectorSubtract(
+			VectorMultiply(VectorSwizzle(A, 3, 3, 0, 0), B), 
+			VectorMultiply(VectorSwizzle(A, 1, 1, 2, 2), VectorSwizzle(B, 2, 3, 0, 1))
+		);
+
+		VectorRegister X = VectorSubtract(
+			VectorMultiply(DetD, A),
+			VectorAdd(
+				VectorMultiply(B, VectorSwizzle(DC, 0, 3, 0, 3)), 
+				VectorMultiply(VectorSwizzle(B, 1, 0, 3, 2), VectorSwizzle(DC, 2, 1, 2, 1))
+			)
+		);
+
+		VectorRegister W = VectorSubtract(
+			VectorMultiply(DetA, D), 
+			VectorAdd(
+				VectorMultiply(C, VectorSwizzle(AB, 0, 3, 0, 3)), 
+				VectorMultiply(VectorSwizzle(C, 1, 0, 3, 2), VectorSwizzle(AB, 2, 1, 2, 1))
+			)
+		);
 
 		VectorRegister DetM = VectorMultiply(DetA, DetD);
-		VectorRegister Y = VectorSubtract(VectorMultiply(DetB, C), VectorSubtract(VectorMultiply(D, VectorSwizzle(AB, 3, 0, 3, 0)), VectorMultiply(VectorSwizzle(D, 1, 0, 3, 2), VectorSwizzle(AB, 2, 1, 2, 1))));
-		VectorRegister Z = VectorSubtract(VectorMultiply(DetC, B), VectorSubtract(VectorMultiply(A, VectorSwizzle(DC, 3, 0, 3, 0)), VectorMultiply(VectorSwizzle(A, 1, 0, 3, 2), VectorSwizzle(DC, 2, 1, 2, 1))));
+
+		VectorRegister Y = VectorSubtract(
+			VectorMultiply(DetB, C), 
+			VectorSubtract(
+				VectorMultiply(D, VectorSwizzle(AB, 3, 0, 3, 0)), 
+				VectorMultiply(VectorSwizzle(D, 1, 0, 3, 2), VectorSwizzle(AB, 2, 1, 2, 1))
+			)
+		);
+
+		VectorRegister Z = VectorSubtract(
+			VectorMultiply(DetC, B),
+			VectorSubtract(
+				VectorMultiply(A, VectorSwizzle(DC, 3, 0, 3, 0)), 
+				VectorMultiply(VectorSwizzle(A, 1, 0, 3, 2), VectorSwizzle(DC, 2, 1, 2, 1))
+			)
+		);
 
 		
 		DetM = VectorAdd(DetM, VectorMultiply(DetB, DetC));
@@ -230,7 +237,7 @@ namespace Nexus
 
 	FMatrix FMatrix::GetInverseFast() const
 	{
-
+		return GetInverse();
 	}
 
 	float FMatrix::GetDeterminant() const

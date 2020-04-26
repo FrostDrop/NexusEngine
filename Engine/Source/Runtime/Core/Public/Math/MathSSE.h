@@ -147,6 +147,13 @@ namespace Nexus
         return _mm_add_ps(Vec1, Vec2);
     }
 
+    /**
+     * Performs a horizontal addition on two vectors.
+     *
+     * @param Vec1	1st vector
+     * @param Vec2	2nd vector
+     * @return		Horizontal addition of the first and the second vector.
+     */
     FORCEINLINE VectorRegister VectorHorizontalAdd(const VectorRegister& Vec1, const VectorRegister& Vec2)
     {
         return _mm_hadd_ps(Vec1, Vec2);
