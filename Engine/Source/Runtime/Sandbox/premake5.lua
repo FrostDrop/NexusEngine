@@ -38,6 +38,7 @@ project "Sandbox"
 	filter "system:linux"
 		systemversion "latest"
 		cppdialect "C++17"
+		optimize "On"
 
 		defines {
 			"NEXUS_PLATFORM_LINUX"
