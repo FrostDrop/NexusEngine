@@ -6,7 +6,11 @@ namespace Nexus
 
 	struct FWindowsPlatformTypes : public FGenericPlatformTypes
 	{
-
+#ifdef _WIN64
+		using PlatformSizeType = unsigned __int64;
+#else
+		using PlatformSizeType = unsigned long;
+#endif
 	};
 
 	using FPlatformTypes = FWindowsPlatformTypes;

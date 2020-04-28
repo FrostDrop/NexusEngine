@@ -39,6 +39,8 @@ namespace Nexus
 	using int32 = FPlatformTypes::int32;
 	using int64 = FPlatformTypes::int64;
 
+	using PlatformSizeType = FPlatformTypes::PlatformSizeType;
+
 }
 
 /** API definition. */

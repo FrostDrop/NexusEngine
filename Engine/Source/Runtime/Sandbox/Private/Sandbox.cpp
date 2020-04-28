@@ -1,7 +1,8 @@
 #include <iostream>
 
 #include "Core.h"
-
+#include "HAL/Memory.h"
+#include "HAL/MallocAnsi.h"
 
 namespace Nexus
 {
@@ -14,6 +15,7 @@ namespace Nexus
 		FSandbox()
 		{
 			std::cout << "Hello Nexus!" << std::endl;
+			GMalloc = new FMallocAnsi;
 		}
 
 		virtual ~FSandbox()
@@ -23,7 +25,9 @@ namespace Nexus
 
 		virtual void Run() override
 		{
-			
+			void* Memory = FMemory::Malloc(1000);
+
+			FMemory::Free(Memory);
 		}
 
 	};
