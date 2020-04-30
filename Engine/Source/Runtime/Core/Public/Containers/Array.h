@@ -4,7 +4,7 @@
 
 #include "HAL/Allocators/AnsiAllocator.h"
 
-#include "Templates/IsTriviallyCopyConstructible.h"
+#include "Templates/IsBitwiseConstructible.h"
 #include "Templates/IsTriviallyDestructable.h"
 
 namespace Nexus
@@ -50,7 +50,7 @@ namespace Nexus
 		 */
 		TArray(const std::initializer_list<FElementType>& InitList)
 		{
-			CopyToEmpty(InitList.begin(), (SizeType)InitList.size(), 0, 0);
+			CopyToEmpty(InitList.begin(), static_cast<FSizeType>(InitList.size()), 0, 0);
 		}
 
 		/**
@@ -225,7 +225,7 @@ namespace Nexus
 		template <typename FDestinationElementType, typename FSourceElementType>
 		FORCEINLINE void ConstructItems(void* Dest, const FSourceElementType* Source, FSizeType Count)
 		{
-			if constexpr (TIsTriviallyCopyConstructible<FDestinationElementType, FSourceElementType>::Value)
+			if constexpr (TIsBitwiseConstructible<FDestinationElementType, FSourceElementType>::Value)
 			{
 				FMemory::Memcpy(Dest, Source, sizeof(FSourceElementType) * Count);
 			}
@@ -250,7 +250,7 @@ namespace Nexus
 		 *
 		 * @note: This function is optimized for values of T, and so will not dynamically dispatch destructor calls if T's destructor is virtual.
 		 */
-		template <typename FElementType, typename FSizeType>
+		template <typename FElementType>
 		FORCEINLINE void DestructItems(FElementType* Element, FSizeType Count)
 		{
 			if constexpr (!TIsTriviallyDestructible<FElementType>::Value)
@@ -285,7 +285,7 @@ namespace Nexus
 			if (OtherNum || ExtraSlack || PrevMax)
 			{
 				ResizeForCopy(NewNum + ExtraSlack, PrevMax);
-				ConstructItems<FElementType>(GetData(), OtherData, OtherNum);
+				ConstructItems<FElementType, FOtherElementType>(GetData(), OtherData, OtherNum);
 			}
 			else
 			{
