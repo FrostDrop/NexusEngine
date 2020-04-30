@@ -7,6 +7,9 @@
 namespace Nexus
 {
 
+    /**
+     *
+     */
     struct CORE_API FAlign
     {
 

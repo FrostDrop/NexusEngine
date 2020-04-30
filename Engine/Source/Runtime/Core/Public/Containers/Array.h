@@ -6,6 +6,7 @@
 
 #include "Templates/IsBitwiseConstructible.h"
 #include "Templates/IsTriviallyDestructable.h"
+#include "Templates/Forward.h"
 
 namespace Nexus
 {
@@ -140,6 +141,85 @@ namespace Nexus
 
 	public:
 
+		// Index operators.
+
+		/**
+		 * Array bracket operator. Returns reference to element at give index.
+		 *
+		 * @returns Reference to indexed element.
+		 */
+		FORCEINLINE FElementType& operator[](FSizeType Index)
+		{
+			return GetData()[Index];
+		}
+
+		/**
+		 * Array bracket operator. Returns reference to element at give index.
+		 *
+		 * Const version of the above.
+		 *
+		 * @returns Reference to indexed element.
+		 */
+		FORCEINLINE const FElementType& operator[](FSizeType Index) const
+		{
+			return GetData()[Index];
+		}
+
+	public:
+
+		// Content modifier functions.
+
+		/**
+		 * Adds a new item to the end of the array, possibly reallocating the whole array to fit.
+		 *
+		 * @param Item The item to add
+		 * @return Index to the new item
+		 * @see AddDefaulted, AddUnique, AddZeroed, Append, Insert
+		 */
+		FORCEINLINE FSizeType Add(const FElementType& Item)
+		{
+			return Emplace(Item);
+		}
+
+		/**
+		 * Constructs a new item at the end of the array, possibly reallocating the whole array to fit.
+		 *
+		 * @param Args	The arguments to forward to the constructor of the new item.
+		 * @return		Index to the new item
+		 */
+		template <typename... FArgsType>
+		FORCEINLINE FSizeType Emplace(FArgsType&&... Args)
+		{
+			const FSizeType Index = AddUninitialized(1);
+
+			new(GetData() + Index) FElementType(TForward<FArgsType>(Args)...);
+			return Index;
+		}
+
+		/**
+		 * Adds a given number of uninitialized elements into the array.
+		 *
+		 * Caution, AddUninitialized() will create elements without calling
+		 * the constructor and this is not appropriate for element types that
+		 * require a constructor to function properly.
+		 *
+		 * @param Count Number of elements to add.
+		 * @returns Number of elements in array before addition.
+		 */
+		FORCEINLINE FSizeType AddUninitialized(FSizeType Count = 1)
+		{
+			const FSizeType OldNum = ArrayNum;
+
+			if ((ArrayNum += Count) > ArrayMax)
+			{
+				ResizeGrow(OldNum);
+			}
+
+			return OldNum;
+		}
+
+	public:
+
 		// Simple functions.
 
 		/**
@@ -194,8 +274,11 @@ namespace Nexus
 
 	private:
 
-		// Misc.
+		// Memory functions.
 
+		/**
+		 *
+		 */
 		FORCENOINLINE void ResizeGrow(FSizeType OldNum)
 		{
 			ArrayMax = AllocatorInstance.CalculateSlackGrow(ArrayNum, ArrayMax, sizeof(FElementType));

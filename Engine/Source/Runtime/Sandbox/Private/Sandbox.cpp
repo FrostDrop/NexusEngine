@@ -27,6 +27,9 @@ namespace Nexus
 		virtual void Run() override
 		{
 			TArray<uint32> Array;
+
+			Array.Add(1);
+			Array.Add(2);
 		}
 
 	};
