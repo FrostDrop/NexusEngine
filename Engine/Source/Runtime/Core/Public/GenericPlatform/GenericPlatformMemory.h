@@ -1,6 +1,11 @@
 #pragma once
 
-#include <memory>
+#if NEXUS_PLATFORM_WINDOWS
+	#include <memory>
+#elif
+	#include <cstring>
+#endif
+
 
 #include "CoreTypes.h"
 
