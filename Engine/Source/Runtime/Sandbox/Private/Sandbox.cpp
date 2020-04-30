@@ -3,6 +3,7 @@
 #include "Core.h"
 #include "HAL/Memory.h"
 #include "HAL/MallocAnsi.h"
+#include "Containers/Array.h"
 
 namespace Nexus
 {
@@ -25,9 +26,7 @@ namespace Nexus
 
 		virtual void Run() override
 		{
-			void* Memory = FMemory::Malloc(1000);
-
-			FMemory::Free(Memory);
+			TArray<uint32> Array;
 		}
 
 	};

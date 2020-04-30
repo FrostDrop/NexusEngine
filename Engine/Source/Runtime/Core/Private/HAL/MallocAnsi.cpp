@@ -13,7 +13,7 @@ namespace Nexus
 
 	void* FMallocAnsi::Malloc(PlatformSizeType Size, uint32 Alignment)
 	{
-		Alignment = FMath::Max(Size >= 16 ? (uint32)16 : (uint32)8, Alignment);
+		Alignment = FMath::Max(Size >= 16 ? static_cast<uint32>(16) : static_cast<uint32>(8), Alignment);
 
 		void* Result = nullptr;
 		void* Ptr = ::malloc(Size + Alignment + sizeof(void*) + sizeof(PlatformSizeType));

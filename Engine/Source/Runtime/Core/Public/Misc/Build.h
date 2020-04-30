@@ -1,0 +1,6 @@
+#pragma once
+
+
+#ifndef BUILD_AGGRESSIVE_MEMORY_SAVING
+	#define BUILD_AGGRESSIVE_MEMORY_SAVING 0
+#endif
