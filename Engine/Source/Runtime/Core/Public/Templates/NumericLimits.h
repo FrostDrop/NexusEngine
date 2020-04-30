@@ -142,7 +142,7 @@ namespace Nexus
 	struct TNumericLimits<uint64>
 	{
 
-		using FNumericType = uint64;;
+		using FNumericType = uint64;
 
 		static constexpr FNumericType Min()
 		{

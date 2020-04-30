@@ -250,7 +250,6 @@ namespace Nexus
 		 *
 		 * @note: This function is optimized for values of T, and so will not dynamically dispatch destructor calls if T's destructor is virtual.
 		 */
-		template <typename FElementType>
 		FORCEINLINE void DestructItems(FElementType* Element, FSizeType Count)
 		{
 			if constexpr (!TIsTriviallyDestructible<FElementType>::Value)
