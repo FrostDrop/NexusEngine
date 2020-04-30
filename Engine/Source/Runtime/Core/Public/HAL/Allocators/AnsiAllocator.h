@@ -16,7 +16,7 @@ namespace Nexus
 
 	public:
 
-		using FSizeType = PlatformSizeType;
+		using FSizeType = uint32;
 
 	public:
 
@@ -43,7 +43,7 @@ namespace Nexus
 		/**
 		 *
 		 */
-		void ResizeAllocation(FSizeType PreviousNumElements, FSizeType NumElements, FSizeType NumBytesPerElement)
+		void ResizeAllocation(FSizeType PreviousNumElements, FSizeType NumElements, PlatformSizeType NumBytesPerElement)
 		{
 			if (NumElements)
 			{
