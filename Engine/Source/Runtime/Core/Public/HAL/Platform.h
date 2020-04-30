@@ -11,6 +11,9 @@
 	#define NEXUS_PLATFORM_MAC 0
 #endif
 
+/** Include C-Runtime. */
+#include "PlatformCrt.h"
+
 /** Include generic platform header. */
 #include "GenericPlatform/GenericPlatform.h"
 
