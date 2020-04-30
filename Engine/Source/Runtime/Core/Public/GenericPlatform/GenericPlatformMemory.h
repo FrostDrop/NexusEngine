@@ -2,7 +2,7 @@
 
 #if NEXUS_PLATFORM_WINDOWS
 	#include <memory>
-#elif
+#else
 	#include <cstring>
 #endif
 
