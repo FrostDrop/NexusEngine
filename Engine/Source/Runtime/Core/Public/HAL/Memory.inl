@@ -23,4 +23,9 @@ namespace Nexus
 		return FPlatformMemory::Memcpy(Dest, Src, Size);
 	}
 
+	void* FMemory::Memmove(void* Dest, const void* Src, PlatformSizeType Count)
+	{
+		return FPlatformMemory::Memmove(Dest, Src, Count);
+	}
+
 }

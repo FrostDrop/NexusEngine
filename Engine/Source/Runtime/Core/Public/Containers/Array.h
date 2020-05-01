@@ -4,9 +4,10 @@
 
 #include "HAL/Allocators/AnsiAllocator.h"
 
+#include "Templates/Forward.h"
 #include "Templates/IsBitwiseConstructible.h"
 #include "Templates/IsTriviallyDestructable.h"
-#include "Templates/Forward.h"
+#include "Templates/IsBitwiseRelocatable.h"
 
 namespace Nexus
 {
@@ -182,6 +183,22 @@ namespace Nexus
 		}
 
 		/**
+		 * Inserts a given element into the array at given location.
+		 *
+		 * @param Item The element to insert.
+		 * @param Index Tells where to insert the new elements.
+		 *
+		 * @returns Location at which the insert was done.
+		 */
+		FSizeType Insert(const FElementType& Item, FSizeType Index)
+		{
+			InsertUninitialized(Index, 1);
+			new(GetData() + Index) FElementType(Item);
+
+			return Index;
+		}
+
+		/**
 		 * Constructs a new item at the end of the array, possibly reallocating the whole array to fit.
 		 *
 		 * @param Args	The arguments to forward to the constructor of the new item.
@@ -216,6 +233,24 @@ namespace Nexus
 			}
 
 			return OldNum;
+		}
+
+		/**
+		 *
+		 */
+		template <typename FOtherSizeType>
+		void InsertUninitialized(FSizeType Index, FOtherSizeType Count)
+		{
+			FSizeType NewNum = Count;
+			const FSizeType OldNum = ArrayNum;
+
+			if ((ArrayNum += Count) > ArrayMax)
+			{
+				ResizeGrow(OldNum);
+			}
+
+			FElementType* Data = GetData() + Index;
+			RelocateConstructItems<FElementType>(Data + Count, Data, OldNum - Index);
 		}
 
 	public:
@@ -343,6 +378,36 @@ namespace Nexus
 					Element->FDestructItemsElementType::~FDestructItemsElementType();
 
 					++Element;
+					--Count;
+				}
+			}
+		}
+
+		/**
+		 * Relocates a range of items to a new memory location as a new type. This is a so-called 'destructive move' for which
+		 * there is no single operation in C++ but which can be implemented very efficiently in general.
+		 *
+		 * @param	Dest		The memory location to relocate to.
+		 * @param	Source		A pointer to the first item to relocate.
+		 * @param	Count		The number of elements to relocate.
+		 */
+		template <typename FDestinationElementType, typename FSourceElementType>
+		FORCEINLINE void RelocateConstructItems(void* Dest, const FSourceElementType* Source, FSizeType Count)
+		{
+			if constexpr (TIsBitwiseRelocatable<FDestinationElementType, FSourceElementType>::Value)
+			{
+				FMemory::Memmove(Dest, Source, sizeof(FSourceElementType) * Count);
+			}
+			else
+			{
+				while (Count)
+				{
+					using FRelocateConstructItemsElementType = FSourceElementType;
+
+					new (Dest) FDestinationElementType(*Source);
+					++(FDestinationElementType*&)Dest;
+
+					(Source++)->FRelocateConstructItemsElementType::~FRelocateConstructItemsElementType();
 					--Count;
 				}
 			}

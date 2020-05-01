@@ -30,6 +30,8 @@ namespace Nexus
 
 			Array.Add(1);
 			Array.Add(2);
+
+			Array.Insert(3, 1);
 		}
 
 	};
