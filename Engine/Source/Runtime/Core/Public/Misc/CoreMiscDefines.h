@@ -1,5 +1,7 @@
 #pragma once
 
+#include "AssertionMacros.h"
+
 
 namespace Nexus
 {

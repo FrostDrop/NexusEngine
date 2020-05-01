@@ -61,6 +61,11 @@ namespace Nexus
 	#define FORCENOINLINE
 #endif
 
+/** Restrict. */
+#ifndef RESTRICT
+	#define RESTRICT __restrict
+#endif
+
 /** Base defines. */
 #ifndef PLATFORM_LITTLE_ENDIAN
 	#define PLATFORM_LITTLE_ENDIAN 0

@@ -44,6 +44,7 @@ namespace Nexus
 		 */
 		FORCEINLINE TArray(const FElementType* Ptr, FSizeType Count)
 		{
+			Check(Ptr != nullptr || Count == 0);
 			CopyToEmpty(Ptr, Count, 0, 0);
 		}
 
@@ -151,6 +152,7 @@ namespace Nexus
 		 */
 		FORCEINLINE FElementType& operator[](FSizeType Index)
 		{
+			RangeCheck(Index);
 			return GetData()[Index];
 		}
 
@@ -163,6 +165,7 @@ namespace Nexus
 		 */
 		FORCEINLINE const FElementType& operator[](FSizeType Index) const
 		{
+			RangeCheck(Index);
 			return GetData()[Index];
 		}
 
@@ -179,6 +182,7 @@ namespace Nexus
 		 */
 		FORCEINLINE FSizeType Add(const FElementType& Item)
 		{
+			CheckAddress(&Item);
 			return Emplace(Item);
 		}
 
@@ -192,10 +196,25 @@ namespace Nexus
 		 */
 		FSizeType Insert(const FElementType& Item, FSizeType Index)
 		{
+			CheckAddress(&Item);
+
 			InsertUninitialized(Index, 1);
 			new(GetData() + Index) FElementType(Item);
 
 			return Index;
+		}
+
+		/**
+		 * Removes an element (or elements) at given location optionally shrinking
+		 * the array.
+		 *
+		 * @param Index Location in array of the element to remove.
+		 * @param Count (Optional) Number of elements to remove. Default is 1.
+		 * @param bAllowShrinking (Optional) Tells if this call can shrink array if suitable after remove. Default is true.
+		 */
+		FORCEINLINE void RemoveAt(FSizeType Index)
+		{
+			RemoveAtImpl(Index, 1, true);
 		}
 
 		/**
@@ -213,44 +232,27 @@ namespace Nexus
 			return Index;
 		}
 
-		/**
-		 * Adds a given number of uninitialized elements into the array.
-		 *
-		 * Caution, AddUninitialized() will create elements without calling
-		 * the constructor and this is not appropriate for element types that
-		 * require a constructor to function properly.
-		 *
-		 * @param Count Number of elements to add.
-		 * @returns Number of elements in array before addition.
-		 */
-		FORCEINLINE FSizeType AddUninitialized(FSizeType Count = 1)
-		{
-			const FSizeType OldNum = ArrayNum;
+	public:
 
-			if ((ArrayNum += Count) > ArrayMax)
-			{
-				ResizeGrow(OldNum);
-			}
-
-			return OldNum;
-		}
+		// Filter functions.
 
 		/**
+		 * Checks if this array contains the element.
 		 *
+		 * @returns	True if found. False otherwise.
+		 * @see ContainsByPredicate, FilterByPredicate, FindByPredicate
 		 */
-		template <typename FOtherSizeType>
-		void InsertUninitialized(FSizeType Index, FOtherSizeType Count)
+		template <typename FComparisonType>
+		bool Contains(const FComparisonType& Item) const
 		{
-			FSizeType NewNum = Count;
-			const FSizeType OldNum = ArrayNum;
-
-			if ((ArrayNum += Count) > ArrayMax)
+			for (const FElementType* RESTRICT Data = GetData(), *RESTRICT DataEnd = Data + ArrayNum; Data != DataEnd; ++Data)
 			{
-				ResizeGrow(OldNum);
+				if (*Data == Item)
+				{
+					return true;
+				}
 			}
-
-			FElementType* Data = GetData() + Index;
-			RelocateConstructItems<FElementType>(Data + Count, Data, OldNum - Index);
+			return false;
 		}
 
 	public:
@@ -265,6 +267,16 @@ namespace Nexus
 		FORCEINLINE FElementType* GetData()
 		{
 			return static_cast<FElementType*>(AllocatorInstance.GetAllocation());
+		}
+
+		/**
+		 * Helper function for returning a typed pointer to the first array entry.
+		 *
+		 * @returns Pointer to first array entry or nullptr if ArrayMax == 0.
+		 */
+		FORCEINLINE const FElementType* GetData() const
+		{
+			return (const FElementType*)AllocatorInstance.GetAllocation();
 		}
 
 		/**
@@ -307,6 +319,24 @@ namespace Nexus
 			return ArrayMax - ArrayNum;
 		}
 
+	public:
+
+		// Memory functions.
+
+		/**
+		 * Shrinks the array's used memory to smallest possible to store elements currently in it.
+		 *
+		 * @see Slack
+		 */
+		FORCEINLINE void Shrink()
+		{
+			CheckInvariants();
+			if (ArrayMax != ArrayNum)
+			{
+				ResizeTo(ArrayNum);
+			}
+		}
+
 	private:
 
 		// Memory functions.
@@ -331,6 +361,83 @@ namespace Nexus
 			}
 
 			ArrayMax = NewMax;
+		}
+
+		/**
+		 *
+		 */
+		FORCENOINLINE void ResizeShrink()
+		{
+			const FSizeType NewArrayMax = AllocatorInstance.CalculateSlackShrink(ArrayNum, ArrayMax, sizeof(FElementType));
+
+			if (NewArrayMax != ArrayMax)
+			{
+				ArrayMax = NewArrayMax;
+				Check(ArrayMax >= ArrayNum);
+
+				AllocatorInstance.ResizeAllocation(ArrayNum, ArrayMax, sizeof(FElementType));
+			}
+		}
+
+		/**
+		 *
+		 */
+		FORCENOINLINE void ResizeTo(FSizeType NewMax)
+		{
+			if (NewMax != ArrayMax)
+			{
+				ArrayMax = NewMax;
+				AllocatorInstance.ResizeAllocation(ArrayNum, ArrayMax, sizeof(FElementType));
+			}
+		}
+
+		/**
+		 * Adds a given number of uninitialized elements into the array.
+		 *
+		 * Caution, AddUninitialized() will create elements without calling
+		 * the constructor and this is not appropriate for element types that
+		 * require a constructor to function properly.
+		 *
+		 * @param Count Number of elements to add.
+		 * @returns Number of elements in array before addition.
+		 */
+		FORCEINLINE FSizeType AddUninitialized(FSizeType Count = 1)
+		{
+			CheckInvariants();
+			Check(Count >= 0);
+
+			const FSizeType OldNum = ArrayNum;
+
+			if ((ArrayNum += Count) > ArrayMax)
+			{
+				ResizeGrow(OldNum);
+			}
+
+			return OldNum;
+		}
+
+		/**
+		 *
+		 */
+		template <typename FOtherSizeType>
+		void InsertUninitialized(FSizeType Index, FOtherSizeType Count)
+		{
+			CheckInvariants();
+			Check((Count >= 0) & (Index >= 0) & (Index <= ArrayNum));
+
+			FSizeType NewNum = Count;
+			Check(static_cast<FOtherSizeType>(NewNum) == Count);
+
+
+			const FSizeType OldNum = ArrayNum;
+
+			if ((ArrayNum += Count) > ArrayMax)
+			{
+				ResizeGrow(OldNum);
+			}
+
+			FElementType* Data = GetData() + Index;
+			RelocateConstructItems<FElementType>(Data + Count, Data, OldNum - Index);
 		}
 
 		/**
@@ -427,6 +534,10 @@ namespace Nexus
 		void CopyToEmpty(const FOtherElementType* OtherData, FOtherSizeType OtherNum, FSizeType PrevMax, FSizeType ExtraSlack)
 		{
 			FSizeType NewNum = OtherNum;
+
+			Check(static_cast<FOtherSizeType>(NewNum) == OtherNum);
+			Check(ExtraSlack >= 0);
+
 			ArrayNum = NewNum;
 
 			if (OtherNum || ExtraSlack || PrevMax)
@@ -439,6 +550,79 @@ namespace Nexus
 				ArrayMax = 0;
 			}
 		}
+
+		/**
+		 *
+		 */
+		void RemoveAtImpl(FSizeType Index, FSizeType Count, bool bAllowShrinking)
+		{
+			if (Count)
+			{
+				CheckInvariants();
+				Check((Count >= 0) & (Index >= 0) & (Index + Count <= ArrayNum));
+
+				DestructItems(GetData() + Index, Count);
+				FSizeType NumToMove = ArrayNum - Index - Count;
+
+				if (NumToMove)
+				{
+					FMemory::Memmove
+					(
+						static_cast<uint8*>(AllocatorInstance.GetAllocation()) + (Index) * sizeof(FElementType),
+						static_cast<uint8*>(AllocatorInstance.GetAllocation()) + (Index + Count) * sizeof(FElementType),
+						NumToMove * sizeof(FElementType)
+					);
+				}
+
+				ArrayNum -= Count;
+				if (bAllowShrinking)
+				{
+					ResizeShrink();
+				}
+			}
+		}
+
+	private:
+
+		// Helper functions.
+
+		/**
+		 * Checks array invariants: if array size is greater than zero and less
+		 * than maximum.
+		 */
+		FORCEINLINE void CheckInvariants() const
+		{
+			Check((ArrayNum >= 0) & (ArrayMax >= ArrayNum));
+		}
+
+		/**
+		 * Checks if index is in array range.
+		 *
+		 * @param Index Index to check.
+		 */
+		FORCEINLINE void RangeCheck(FSizeType Index) const
+		{
+			CheckInvariants();
+
+			if constexpr (FAllocator::RequireRangeCheck)
+			{
+				Check((Index >= 0) & (Index < ArrayNum));
+			}
+		}
+
+		/**
+		 * Checks that the specified address is not part of an element within the
+		 * container. Used for implementations to check that reference arguments
+		 * aren't going to be invalidated by possible reallocation.
+		 *
+		 * @param Addr The address to check.
+		 * @see Add, Remove
+		 */
+		FORCEINLINE void CheckAddress(const FElementType* Address) const
+		{
+			Check(Address < GetData() || Address >= (GetData() + ArrayMax));
+		}
+
 
 	private:
 

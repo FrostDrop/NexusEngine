@@ -32,6 +32,7 @@ namespace Nexus
 			Array.Add(2);
 
 			Array.Insert(3, 1);
+			Array.RemoveAt(1);
 		}
 
 	};
