@@ -30,6 +30,11 @@ namespace Nexus
 		 */
 		virtual void Free(void* Original) override;
 
+		/**
+		 *
+		 */
+		virtual PlatformSizeType QuantizeSize(PlatformSizeType Size, uint32 Alignment = DefaultAlignment) override;
+
 	private:
 
 		inline PlatformSizeType GetAnsiAllocationSize(void* Original) const;

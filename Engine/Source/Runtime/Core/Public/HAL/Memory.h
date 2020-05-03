@@ -30,6 +30,11 @@ namespace Nexus
 		/**
 		 *
 		 */
+		static PlatformSizeType QuantizeSize(PlatformSizeType Size, uint32 Alignment = DefaultAlignment);
+
+		/**
+		 *
+		 */
 		static FORCEINLINE void* Memcpy(void* Dest, const void* Src, PlatformSizeType Size);
 
 		/**

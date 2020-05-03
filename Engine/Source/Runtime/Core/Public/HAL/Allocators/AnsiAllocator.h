@@ -66,7 +66,7 @@ namespace Nexus
 		 */
 		FORCEINLINE void MoveToEmpty(FAnsiAllocator& Other)
 		{
-			// Check(this != &Other);
+			Check(this != &Other);
 
 			if (Data)
 			{
@@ -98,7 +98,14 @@ namespace Nexus
 				Grow = FSizeType(NumElements) + 3 * FSizeType(NumElements) / 8 + ConstantGrow;
 			}
 			
+
+#if 1
+			// Always quantize.
+			Result = FMemory::QuantizeSize(Grow * NumBytesPerElement, DefaultAlignment) / NumBytesPerElement;
+#else
 			Result = Grow;
+#endif
+
 			if (NumElements > Result)
 			{
 				Result = TNumericLimits<FSizeType>::Max();

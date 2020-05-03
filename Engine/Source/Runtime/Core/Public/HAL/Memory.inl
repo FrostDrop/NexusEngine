@@ -18,6 +18,16 @@ namespace Nexus
 		GMalloc->Free(Original);
 	}
 
+	PlatformSizeType FMemory::QuantizeSize(PlatformSizeType Size, uint32 Alignment)
+	{
+		if (!GMalloc)
+		{
+			return Size;
+		}
+
+		return GMalloc->QuantizeSize(Size, Alignment);
+	}
+
 	void* FMemory::Memcpy(void* Dest, const void* Src, PlatformSizeType Size)
 	{
 		return FPlatformMemory::Memcpy(Dest, Src, Size);

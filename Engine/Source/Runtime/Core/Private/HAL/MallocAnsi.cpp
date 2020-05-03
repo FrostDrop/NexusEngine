@@ -30,7 +30,7 @@ namespace Nexus
 
 	void* FMallocAnsi::Realloc(void* Original, PlatformSizeType NewSize, uint32 Alignment)
 	{
-		Alignment = FMath::Max(NewSize >= 16 ? (uint32)16 : (uint32)8, Alignment);
+		Alignment = FMath::Max(NewSize >= 16 ? static_cast<uint32>(16) : static_cast<uint32>(8), Alignment);
 
 		void* Result = nullptr;
 
@@ -63,6 +63,14 @@ namespace Nexus
 		{
 			::free(*((void**)((uint8*)Original - sizeof(void*))));
 		}
+	}
+
+	PlatformSizeType FMallocAnsi::QuantizeSize(PlatformSizeType Size, uint32 Alignment)
+	{
+		Alignment = FMath::Max(Size >= 16 ? static_cast<uint32>(16) : static_cast<uint32>(8), Alignment);
+		Size = FAlign::Align(Size, Alignment);
+
+		return Size;
 	}
 
 	PlatformSizeType FMallocAnsi::GetAnsiAllocationSize(void* Original) const

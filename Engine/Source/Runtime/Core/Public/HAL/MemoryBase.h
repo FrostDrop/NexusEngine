@@ -43,6 +43,14 @@ namespace Nexus
 		 */
 		virtual void Free(void* Original) = 0;
 
+		/**
+		 *
+		 */
+		virtual PlatformSizeType QuantizeSize(PlatformSizeType Size, uint32 Alignment = DefaultAlignment)
+		{
+			return Size;
+		}
+
 	};
 
 

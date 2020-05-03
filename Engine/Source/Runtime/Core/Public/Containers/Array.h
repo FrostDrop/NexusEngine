@@ -569,7 +569,7 @@ namespace Nexus
 					FMemory::Memmove
 					(
 						static_cast<uint8*>(AllocatorInstance.GetAllocation()) + (Index) * sizeof(FElementType),
-						static_cast<uint8*>(AllocatorInstance.GetAllocation()) + (Index + Count) * sizeof(FElementType),
+						static_cast<uint8*>(AllocatorInstance.GetAllocation()) + static_cast<PlatformSizeType>(Index + Count) * sizeof(FElementType),
 						NumToMove * sizeof(FElementType)
 					);
 				}
