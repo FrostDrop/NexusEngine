@@ -33,7 +33,7 @@ jobs:
     displayName: 'Prepare Analysis Configuration'
     inputs:
     SonarCloud: 'SonarCloud'
-      organization: 'mexel70'
+      organization: 'mexel70-organization'
       scannerMode: 'CLI'
       configMode: 'manual'
       cliProjectKey: 'Nexus'
