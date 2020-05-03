@@ -75,7 +75,7 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v2
         with:
-          path: Engine/Binaries/Distribution-*/!*.*
+          path: Engine/Binaries/Distribution-*/*
       
       - name: Upload Artifacts (Dynamic Link Libraries)
         if: success()
@@ -100,19 +100,19 @@ jobs:
         run: sh GenerateProjectFiles.command
       
       - name: Debug Build
-        run: xcodebuild build -project Nexus.xcodeproj -scheme Sandbox -sdk macosx -configuration Debug
+        run: xcodebuild build -workspace Nexus.xcworkspace -scheme Sandbox -sdk macosx -configuration Debug
       
       - name: Release Build
-        run: xcodebuild build -project Nexus.xcodeproj -scheme Sandbox -sdk macosx -configuration Release
+        run: xcodebuild build -workspace Nexus.xcworkspace -scheme Sandbox -sdk macosx -configuration Release
       
       - name: Distribution Build
-        run: xcodebuild build -project Nexus.xcodeproj -scheme Sandbox -sdk macosx -configuration Distribution
+        run: xcodebuild build -workspace Nexus.xcworkspace -scheme Sandbox -sdk macosx -configuration Distribution
 
       - name: Upload Artifacts (Executables)
         if: success()
         uses: actions/upload-artifact@v2
         with:
-          path: Engine/Binaries/Distribution-*/!*.*
+          path: Engine/Binaries/Distribution-*/*
       
       - name: Upload Artifacts (Dynamic Link Libraries)
         if: success()
