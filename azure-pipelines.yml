@@ -57,7 +57,7 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        & '$(Agent.TempDirectory)\buildWrapper\build-wrapper-win-x86\build-wrapper-win-x86-64.exe' --out-dir BuildWrapperOutputDirectory 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\msbuild.exe' $(Agent.BuildDirectory)\s\Nexus\Nexus.sln /t:Rebuild
+        & '$(Agent.TempDirectory)\buildWrapper\build-wrapper-win-x86\build-wrapper-win-x86-64.exe' --out-dir BuildWrapperOutputDirectory 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\msbuild.exe' Nexus.sln /t:Rebuild
 
   - task: SonarCloudAnalyze@1
     displayName: 'Run SonarCloud Analysis'
