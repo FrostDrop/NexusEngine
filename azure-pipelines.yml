@@ -32,16 +32,17 @@ jobs:
   - task: SonarCloudPrepare@1
     displayName: 'Prepare Analysis Configuration'
     inputs:
-    SonarCloud: 'SonarCloud'
-     scannerMode: 'CLI'
-     configMode: 'manual'
-     cliProjectKey: 'Nexus'
-     cliProjectName: 'Nexus'
-     cliSources: 'Nexus'
-     extraProperties: |
-       sonar.exclusions=/Engine/Binaries, /Engine/Build, /Engine/Intermediates
-       sonar.cfamily.build-wrapper-output=BuildWrapperOutputDirectory
-       sonar.sourceEncoding=UTF-8
+     SonarCloud: 'SonarCloud'
+      organization: 'mexel70-organization'
+      scannerMode: 'CLI'
+      configMode: 'manual'
+      cliProjectKey: 'Nexus'
+      cliProjectName: 'Nexus'
+      cliSources: 'Nexus'
+      extraProperties: |
+        sonar.exclusions=/Engine/Binaries, /Engine/Build, /Engine/Intermediates
+        sonar.cfamily.build-wrapper-output=BuildWrapperOutputDirectory
+        sonar.sourceEncoding=UTF-8
 
   - task: PowerShell@2
     displayName: 'Download and Expand Build Wrapper'
