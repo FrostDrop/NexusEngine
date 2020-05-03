@@ -33,24 +33,24 @@ jobs:
     displayName: 'Prepare Analysis Configuration'
     inputs:
     SonarCloud: 'SonarCloud'
-      organization: 'mexel70-organization'
-      scannerMode: 'CLI'
-      configMode: 'manual'
-      cliProjectKey: 'Nexus'
-      cliProjectName: 'Nexus'
-      cliSources: 'Nexus'
-      extraProperties: |
-        sonar.exclusions=/Engine/Binaries, /Engine/Build, /Engine/Intermediates
-        sonar.cfamily.build-wrapper-output=BuildWrapperOutputDirectory
-        sonar.sourceEncoding=UTF-8
+     organization: 'mexel70-organization'
+     scannerMode: 'CLI'
+     configMode: 'manual'
+     cliProjectKey: 'Nexus'
+     cliProjectName: 'Nexus'
+     cliSources: 'Nexus'
+     extraProperties: |
+       sonar.exclusions=/Engine/Binaries, /Engine/Build, /Engine/Intermediates
+       sonar.cfamily.build-wrapper-output=BuildWrapperOutputDirectory
+       sonar.sourceEncoding=UTF-8
 
   - task: PowerShell@2
     displayName: 'Download and Expand Build Wrapper'
     inputs:
-      targetType: 'inline'
-      script: |
-        Invoke-WebRequest -Uri 'https://sonarcloud.io/static/cpp/build-wrapper-win-x86.zip' -OutFile '$(Agent.TempDirectory)\build-wrapper.zip'
-        Expand-Archive -Path '$(Agent.TempDirectory)\build-wrapper.zip' -DestinationPath '$(Agent.TempDirectory)/buildWrapper' -Force
+     targetType: 'inline'
+     script: |
+       Invoke-WebRequest -Uri 'https://sonarcloud.io/static/cpp/build-wrapper-win-x86.zip' -OutFile '$(Agent.TempDirectory)\build-wrapper.zip'
+       Expand-Archive -Path '$(Agent.TempDirectory)\build-wrapper.zip' -DestinationPath '$(Agent.TempDirectory)/buildWrapper' -Force
 
   - task: PowerShell@2
     displayName: 'Execute Analysis Build'
