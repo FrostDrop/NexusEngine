@@ -1,0 +1,121 @@
+name: Nexus
+
+on: [push, pull_request]
+
+jobs:
+
+  windows:
+    runs-on: windows-latest
+    name: Windows
+    
+    steps:
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.0.0
+        with:
+          vs-version: latest
+      
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      
+      - name: Setup
+        run: .\Setup.bat
+      
+      - name: Generate Project Files
+        run: .\GenerateProjectFiles.bat
+      
+      - name: Debug Build
+        run: msbuild Nexus.sln -property:Configuration=Debug -property:Architecture=x64
+      
+      - name: Release Build
+        run: msbuild Nexus.sln -property:Configuration=Release -property:Architecture=x64
+        
+      - name: Distribution Build
+        run: msbuild Nexus.sln -property:Configuration=Distribution -property:Architecture=x64
+      
+      - name: Upload Artifacts (Executables)
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          path: Engine/Binaries/Distribution-*/*.exe
+          
+      - name: Upload Artifacts (Dynamic Link Libraries)
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          path: Engine/Binaries/Distribution-*/*.dll
+        
+  linux:
+    runs-on: ubuntu-latest
+    name: Linux
+    
+    steps:      
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      
+      - name: Setup
+        run: sh Setup.sh
+      
+      - name: Generate Project Files
+        run: sh GenerateProjectFiles.sh
+        
+      - name: Debug Build
+        run: make config=debug
+      
+      - name: Release Build
+        run: make config=release
+        
+      - name: Distribution Build
+        run: make config=distribution
+      
+      - name: Upload Artifacts (Executables)
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          path: Engine/Binaries/Distribution-*/!*.*
+      
+      - name: Upload Artifacts (Dynamic Link Libraries)
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          path: Engine/Binaries/Distribution-*/*.so
+
+  mac:
+    runs-on: macOS-latest
+    name: Mac
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      
+      - name: Setup
+        run: sh Setup.command
+      
+      - name: Generate Project Files
+        run: sh GenerateProjectFiles.command
+      
+      - name: Debug Build
+        run: xcodebuild Nexus -project Nexus.xcodeproj -scheme Sandbox -sdk macosx -configuration Debug
+      
+      - name: Release Build
+        run: xcodebuild Nexus -project Nexus.xcodeproj -scheme Sandbox -sdk macosx -configuration Release
+      
+      - name: Distribution Build
+        run: xcodebuild Nexus -project Nexus.xcodeproj -scheme Sandbox -sdk macosx -configuration Distribution
+
+      - name: Upload Artifacts (Executables)
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          path: Engine/Binaries/Distribution-*/!*.*
+      
+      - name: Upload Artifacts (Dynamic Link Libraries)
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          path: Engine/Binaries/Distribution-*/*.dylib
