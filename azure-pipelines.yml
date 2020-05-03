@@ -29,6 +29,45 @@ jobs:
     inputs:
      filename: "GenerateProjectFiles.bat"
 
+  - task: SonarCloudPrepare@1
+    displayName: 'Prepare Analysis Configuration'
+    inputs:
+      SonarCloud: 'SonarCloud'
+      organization: 'mexel70-organization'
+      scannerMode: 'CLI'
+      configMode: 'manual'
+      cliProjectKey: 'Nexus'
+      cliProjectName: 'Nexus'
+      cliSources: 'Nexus'
+      extraProperties: |
+        sonar.sources=Engine/Source
+        sonar.exclusions=Engine/Binaries, Engine/Build, Engine/Intermediates, Engine/Source/ThirdParty
+        sonar.cfamily.build-wrapper-output=BuildWrapperOutputDirectory
+        sonar.sourceEncoding=UTF-8
+
+  - task: PowerShell@2
+    displayName: 'Download and Expand Build Wrapper'
+    inputs:
+     targetType: 'inline'
+     script: |
+       Invoke-WebRequest -Uri 'https://sonarcloud.io/static/cpp/build-wrapper-win-x86.zip' -OutFile '$(Agent.TempDirectory)\build-wrapper.zip'
+       Expand-Archive -Path '$(Agent.TempDirectory)\build-wrapper.zip' -DestinationPath '$(Agent.TempDirectory)/buildWrapper' -Force
+
+  - task: PowerShell@2
+    displayName: 'Execute Analysis Build'
+    inputs:
+      targetType: 'inline'
+      script: |
+        & '$(Agent.TempDirectory)\buildWrapper\build-wrapper-win-x86\build-wrapper-win-x86-64.exe' --out-dir BuildWrapperOutputDirectory 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\msbuild.exe' Nexus.sln /t:Rebuild
+
+  - task: SonarCloudAnalyze@1
+    displayName: 'Run SonarCloud Analysis'
+
+  - task: SonarCloudPublish@1
+    displayName: 'Publish Sonarcloud Analysis'
+    inputs:
+      pollingTimeoutSec: '300'
+
   - task: MSBuild@1
     displayName: Debug Build
     inputs:
