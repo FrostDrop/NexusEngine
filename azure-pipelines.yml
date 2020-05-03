@@ -40,7 +40,8 @@ jobs:
       cliProjectName: 'Nexus'
       cliSources: 'Nexus'
       extraProperties: |
-        sonar.exclusions=/Engine/Binaries, /Engine/Build, /Engine/Intermediates
+        sonar.sources=Engine/Source
+        sonar.exclusions=Engine/Binaries, Engine/Build, Engine/Intermediates, Engine/Source/ThirdParty
         sonar.cfamily.build-wrapper-output=BuildWrapperOutputDirectory
         sonar.sourceEncoding=UTF-8
 
