@@ -38,12 +38,14 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v2
         with:
+          name: Windows Build 
           path: Engine/Binaries/Distribution-*/*.exe
           
       - name: Upload Artifacts (Dynamic Link Libraries)
         if: success()
         uses: actions/upload-artifact@v2
         with:
+          name: Windows Build 
           path: Engine/Binaries/Distribution-*/*.dll
         
   linux:
@@ -75,12 +77,14 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v2
         with:
+          name: Linux Build
           path: Engine/Binaries/Distribution-*/!(*.*)
       
       - name: Upload Artifacts (Dynamic Link Libraries)
         if: success()
         uses: actions/upload-artifact@v2
         with:
+          name: Linux Build
           path: Engine/Binaries/Distribution-*/*.so
 
   mac:
@@ -112,10 +116,12 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v2
         with:
+          name: Mac Build
           path: Engine/Binaries/Distribution-*/!(*.*)
       
       - name: Upload Artifacts (Dynamic Link Libraries)
         if: success()
         uses: actions/upload-artifact@v2
         with:
+          name: Mac Build
           path: Engine/Binaries/Distribution-*/*.dylib
