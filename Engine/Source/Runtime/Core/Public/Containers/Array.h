@@ -241,7 +241,9 @@ namespace Nexus
 		 */
 		bool operator==(const TArray& OtherArray) const
 		{
-			return Num() == OtherArray.Num() 
+			FSizeType Count = Num();
+
+			return Count == OtherArray.Num() 
 				&& CompareItems(GetData(), OtherArray.GetData(), Count);
 		}
 
