@@ -5,12 +5,39 @@
 #include "HAL/Allocators/AnsiAllocator.h"
 
 #include "Templates/Forward.h"
+#include "Templates/EnableIf.h"
+#include "Templates/TypeTraits.h"
+#include "Templates/MoveTemp.h"
 #include "Templates/IsBitwiseConstructible.h"
 #include "Templates/IsTriviallyDestructable.h"
 #include "Templates/IsBitwiseRelocatable.h"
 
 namespace Nexus
 {
+
+	namespace Private
+	{
+
+		template <typename FFromArrayType, typename FToArrayType>
+		struct TCanMoveTArrayPointersBetweenArrayTypes
+		{
+			using FFromAllocatorType = typename FFromArrayType::FAllocator;
+			using FToAllocatorType = typename FToArrayType::FAllocator;
+			using FFromElementType = typename FFromArrayType::FElementType;
+			using FToElementType = typename FToArrayType::FElementType;
+
+			enum
+			{
+				Value =
+					TAreTypesEqual<FFromAllocatorType, FToAllocatorType>::Value && // Allocators must be equal
+					(
+						TAreTypesEqual         <FToElementType, FFromElementType>::Value || // The element type of the container must be the same, or...
+						TIsBitwiseConstructible<FToElementType, FFromElementType>::Value    // ... the element type of the source container must be bitwise constructible from the element type in the destination container
+					)
+			};
+		};
+
+	}
 
 	template<typename FElementType, typename FAllocator = FAnsiAllocator>
 	class TArray
@@ -84,7 +111,7 @@ namespace Nexus
 		 */
 		FORCEINLINE TArray(TArray&& Other)
 		{
-
+			MoveOrCopy(*this, Other, 0);
 		}
 
 		/**
@@ -93,7 +120,10 @@ namespace Nexus
 		 * @param Other Array to move from.
 		 */
 		template <typename OtherElementType, typename OtherAllocator>
-		FORCEINLINE explicit TArray(TArray<OtherElementType, OtherAllocator>&& Other);
+		FORCEINLINE explicit TArray(TArray<OtherElementType, OtherAllocator>&& Other)
+		{
+			MoveOrCopy(*this, Other, 0);
+		}
 
 		/** 
 		 * Destructor. 
@@ -111,9 +141,15 @@ namespace Nexus
 		 * Initializer list assignment operator. First deletes all currently contained elements
 		 * and then copies from initializer list.
 		 *
-		 * @param InitList The initializer_list to copy from.
+		 * @param InitList The initializer list to copy from.
 		 */
-		TArray& operator=(const std::initializer_list<FElementType>& InitList);
+		TArray& operator=(const std::initializer_list<FElementType>& InitList)
+		{
+			DestructItems(GetData(), ArrayNum);
+			CopyToEmpty(InitList.begin(), static_cast<FSizeType>(InitList.size()), ArrayMax, 0);
+
+			return *this;
+		}
 
 		/**
 		 * Assignment operator. First deletes all currently contained elements
@@ -121,7 +157,16 @@ namespace Nexus
 		 *
 		 * @param Other The source array to assign from.
 		 */
-		TArray& operator=(const TArray& Other);
+		TArray& operator=(const TArray& Other)
+		{
+			if (this != &Other)
+			{
+				DestructItems(GetData(), ArrayNum);
+				CopyToEmpty(Other.GetData(), Other.Num(), ArrayMax, 0);
+			}
+
+			return *this;
+		}
 
 		/**
 		 * Assignment operator. First deletes all currently contained elements
@@ -132,14 +177,29 @@ namespace Nexus
 		 * @param Other The source array to assign from.
 		 */
 		template<typename OtherAllocator>
-		TArray& operator=(const TArray<FElementType, OtherAllocator>& Other);
+		TArray& operator=(const TArray<FElementType, OtherAllocator>& Other)
+		{
+			DestructItems(GetData(), ArrayNum);
+			CopyToEmpty(Other.GetData(), Other.Num(), ArrayMax, 0);
+
+			return *this;
+		}
 
 		/**
 		 * Move assignment operator.
 		 *
 		 * @param Other Array to assign and move from.
 		 */
-		TArray& operator=(TArray&& Other);
+		TArray& operator=(TArray&& Other)
+		{
+			if (this != &Other)
+			{
+				DestructItems(GetData(), ArrayNum);
+				MoveOrCopy(*this, Other, ArrayMax);
+			}
+
+			return *this;
+		}
 
 	public:
 
@@ -171,6 +231,33 @@ namespace Nexus
 
 	public:
 
+		// Comparison operators.
+
+		/**
+		 * Equality operator.
+		 *
+		 * @param OtherArray Array to compare.
+		 * @returns True if this array is the same as OtherArray. False otherwise.
+		 */
+		bool operator==(const TArray& OtherArray) const
+		{
+			return Num() == OtherArray.Num() 
+				&& CompareItems(GetData(), OtherArray.GetData(), Count);
+		}
+
+		/**
+		 * Inequality operator.
+		 *
+		 * @param OtherArray Array to compare.
+		 * @returns True if this array is NOT the same as OtherArray. False otherwise.
+		 */
+		FORCEINLINE bool operator!=(const TArray& OtherArray) const
+		{
+			return !(*this == OtherArray);
+		}
+
+	public:
+
 		// Content modifier functions.
 
 		/**
@@ -187,6 +274,20 @@ namespace Nexus
 		}
 
 		/**
+		 * Adds a new item to the end of the array, possibly reallocating the whole array to fit.
+		 *
+		 * Move semantics version.
+		 *
+		 * @param Item The item to add
+		 * @return Index to the new item
+		 */
+		FORCEINLINE FSizeType Add(FElementType&& Item)
+		{
+			CheckAddress(&Item);
+			return Emplace(MoveTempIfPossible(Item));
+		}
+
+		/**
 		 * Inserts a given element into the array at given location.
 		 *
 		 * @param Item The element to insert.
@@ -200,6 +301,25 @@ namespace Nexus
 
 			InsertUninitialized(Index, 1);
 			new(GetData() + Index) FElementType(Item);
+
+			return Index;
+		}
+
+		/**
+		 * Inserts a given element into the array at given location. Move semantics
+		 * version.
+		 *
+		 * @param Item The element to insert.
+		 * @param Index Tells where to insert the new elements.
+		 * @returns Location at which the insert was done.
+		 * @see Add, Remove
+		 */
+		FSizeType Insert(FElementType&& Item, FSizeType Index)
+		{
+			CheckAddress(&Item);
+
+			InsertUninitialized(Index, 1);
+			new(GetData() + Index) FElementType(MoveTempIfPossible(Item));
 
 			return Index;
 		}
@@ -521,6 +641,33 @@ namespace Nexus
 		}
 
 		/**
+		 *
+		 */
+		FORCEINLINE bool CompareItems(const FElementType* A, const FElementType* B, FSizeType Count)
+		{
+			if constexpr (TTypeTraits<FElementType>::IsBytewiseComparable)
+			{
+				return !FMemory::Memcmp(A, B, sizeof(FElementType) * Count);
+			}
+			else
+			{
+				while (Count)
+				{
+					if (!(*A == *B))
+					{
+						return false;
+					}
+
+					++A;
+					++B;
+					--Count;
+				}
+
+				return true;
+			}
+		}
+
+		/**
 		 * Copies data from one array into this array. Uses the fast path if the
 		 * data in question does not need a constructor.
 		 *
@@ -580,6 +727,45 @@ namespace Nexus
 					ResizeShrink();
 				}
 			}
+		}
+
+	private:
+
+		// Move functions.
+
+		/**
+		 * Moves or copies array. Depends on the array type traits.
+		 *
+		 * This override moves.
+		 *
+		 * @param ToArray Array to move into.
+		 * @param FromArray Array to move from.
+		 */
+		template <typename FFromArrayType, typename FToArrayType>
+		static FORCEINLINE typename TEnableIf<Private::TCanMoveTArrayPointersBetweenArrayTypes<FFromArrayType, FToArrayType>::Value>::Type MoveOrCopy(FToArrayType& ToArray, FFromArrayType& FromArray, FSizeType PrevMax)
+		{
+			ToArray.AllocatorInstance.MoveToEmpty(FromArray.AllocatorInstance);
+
+			ToArray.ArrayNum = FromArray.ArrayNum;
+			ToArray.ArrayMax = FromArray.ArrayMax;
+			FromArray.ArrayNum = 0;
+			FromArray.ArrayMax = 0;
+		}
+
+		/**
+		 * Moves or copies array. Depends on the array type traits.
+		 *
+		 * This override copies.
+		 *
+		 * @param ToArray Array to move into.
+		 * @param FromArray Array to move from.
+		 * @param ExtraSlack Tells how much extra memory should be preallocated
+		 *                   at the end of the array in the number of elements.
+		 */
+		template <typename FFromArrayType, typename FToArrayType>
+		static FORCEINLINE typename TEnableIf<!Private::TCanMoveTArrayPointersBetweenArrayTypes<FFromArrayType, FToArrayType>::Value>::Type MoveOrCopy(FToArrayType& ToArray, FFromArrayType& FromArray, FSizeType PrevMax)
+		{
+			ToArray.CopyToEmpty(FromArray.GetData(), FromArray.Num(), PrevMax, 0);
 		}
 
 	private:

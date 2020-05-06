@@ -42,6 +42,12 @@ namespace Nexus
 	using int32 = FPlatformTypes::int32;
 	using int64 = FPlatformTypes::int64;
 
+	using AnsiChar = FPlatformTypes::AnsiChar;
+	using WideChar = FPlatformTypes::WideChar;
+	using Char8 = FPlatformTypes::Char8;
+	using Char16 = FPlatformTypes::Char16;
+	using Char32 = FPlatformTypes::Char32;
+
 	using PlatformSizeType = FPlatformTypes::PlatformSizeType;
 
 }

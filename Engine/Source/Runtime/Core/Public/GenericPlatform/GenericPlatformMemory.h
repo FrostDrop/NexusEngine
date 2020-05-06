@@ -28,6 +28,14 @@ namespace Nexus
 			return memmove(Dest, Src, Count);
 		}
 
+		/**
+		 *
+		 */
+		static FORCEINLINE int32 Memcmp(const void* Buffer1, const void* Buffer2, PlatformSizeType Count)
+		{
+			return memcmp(Buffer1, Buffer2, Count);
+		}
+
 	};
 
 }

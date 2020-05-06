@@ -1,7 +1,9 @@
 #pragma once
 
 #include "CoreTypes.h"
-#include "Templates/RemoveReference.h"
+
+#include "RemoveReference.h"
+#include "IsLValueReference.h"
 
 namespace Nexus
 {
@@ -13,13 +15,15 @@ namespace Nexus
 	template <typename T>
 	FORCEINLINE T&& TForward(typename TRemoveReference<T>::Type& Obj)
 	{
-		return (T&&)Obj;
+		static_assert(!TIsLValueReferenceType<T>::Value, "Cannot forward lvalue reference.");
+		return static_cast<T&&>(Obj);
 	}
 
 	template <typename T>
 	FORCEINLINE T&& TForward(typename TRemoveReference<T>::Type&& Obj)
 	{
-		return (T&&)Obj;
+		static_assert(!TIsLValueReferenceType<T>::Value, "Cannot forward lvalue reference.");
+		return static_cast<T&&>(Obj);
 	}
 
 }

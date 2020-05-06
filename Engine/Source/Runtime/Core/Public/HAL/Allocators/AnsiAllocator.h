@@ -91,19 +91,19 @@ namespace Nexus
 #endif
 
 			FSizeType Result;
-			FSizeType Grow = FirstGrow;
+			PlatformSizeType Grow = FirstGrow;
 
-			if (NumAllocatedElements || FSizeType(NumElements) > Grow)
+			if (NumAllocatedElements || PlatformSizeType(NumElements) > Grow)
 			{
-				Grow = FSizeType(NumElements) + 3 * FSizeType(NumElements) / 8 + ConstantGrow;
+				Grow = PlatformSizeType(NumElements) + 3 * PlatformSizeType(NumElements) / 8 + ConstantGrow;
 			}
 			
 
 #if 1
 			// Always quantize.
-			Result = FMemory::QuantizeSize(Grow * NumBytesPerElement, DefaultAlignment) / NumBytesPerElement;
+			Result = static_cast<FSizeType>(FMemory::QuantizeSize(Grow * NumBytesPerElement, DefaultAlignment) / NumBytesPerElement);
 #else
-			Result = Grow;
+			Result = static_cast<FSizeType>(Grow);
 #endif
 
 			if (NumElements > Result)

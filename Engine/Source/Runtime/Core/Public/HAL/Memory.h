@@ -40,7 +40,12 @@ namespace Nexus
 		/**
 		 *
 		 */
-		static FORCEINLINE void* Memmove(void* Dest, const void* Src, PlatformSizeType Count);
+		static FORCEINLINE void* Memmove(void* Dest, const void* Src, PlatformSizeType Size);
+
+		/**
+		 *
+		 */
+		static FORCEINLINE int32 Memcmp(const void* Buffer1, const void* Buffer2, PlatformSizeType Size);
 
 
 	};
