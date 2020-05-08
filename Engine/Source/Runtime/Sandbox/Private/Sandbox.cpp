@@ -32,6 +32,18 @@ namespace Nexus
 			Array.Add(2);
 
 			Array.Insert(3, 1);
+
+			TArray<uint32> Other = Array;
+			Other.Add(4);
+			Other.Insert(5, 0);
+
+			Array = Other;
+
+			Array += Other;
+			Array += { 1, 2, 3, 4, 5 };
+
+			for (uint32 i = 0; i < Array.Num(); ++i)
+				std::cout << Array[i] << std::endl;
 		}
 
 	};

@@ -140,6 +140,26 @@ namespace Nexus
 		}
 
 		/**
+		 *
+		 */
+		FSizeType CalculateSlackReserve(FSizeType NumElements, PlatformSizeType NumBytesPerElement) const
+		{
+			FSizeType Result = NumElements;
+			Check(NumElements > 0);
+
+#if 1
+			// Always quantize.
+			Result = static_cast<FSizeType>(FMemory::QuantizeSize(PlatformSizeType(Result) * PlatformSizeType(NumBytesPerElement), DefaultAlignment) / NumBytesPerElement);
+			if (NumElements > Result)
+			{
+				Result = TNumericLimits<FSizeType>::Max();
+			}
+#endif
+
+			return Result;
+		}
+
+		/**
 		 * Gets the address of the allocated memory.
 		 */
 		FORCEINLINE void* GetAllocation() const

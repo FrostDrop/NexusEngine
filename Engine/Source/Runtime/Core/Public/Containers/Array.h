@@ -78,7 +78,7 @@ namespace Nexus
 		/**
 		 * Initializer list constructor.
 		 */
-		TArray(const std::initializer_list<FElementType>& InitList)
+		TArray(std::initializer_list<FElementType> InitList)
 		{
 			CopyToEmpty(InitList.begin(), static_cast<FSizeType>(InitList.size()), 0, 0);
 		}
@@ -143,7 +143,7 @@ namespace Nexus
 		 *
 		 * @param InitList The initializer list to copy from.
 		 */
-		TArray& operator=(const std::initializer_list<FElementType>& InitList)
+		TArray& operator=(std::initializer_list<FElementType> InitList)
 		{
 			DestructItems(GetData(), ArrayNum);
 			CopyToEmpty(InitList.begin(), static_cast<FSizeType>(InitList.size()), ArrayMax, 0);
@@ -260,6 +260,48 @@ namespace Nexus
 
 	public:
 
+		// Append operators.
+
+
+		/**
+		 * Appends the specified initializer list to this array.
+		 *
+		 * @param InitList The initializer list to append.
+		 */
+		TArray& operator+=(std::initializer_list<FElementType> InitList)
+		{
+			Append(InitList);
+			return *this;
+		}
+
+		/**
+		 * Appends the specified array to this array.
+		 * Cannot append to self.
+		 *
+		 * @param Other The array to append.
+		 */
+		TArray& operator+=(const TArray& Other)
+		{
+			Append(Other);
+			return *this;
+		}
+
+		/**
+		 * Appends the specified array to this array.
+		 * Cannot append to self.
+		 *
+		 * Move semantics version.
+		 *
+		 * @param Other The array to append.
+		 */
+		TArray& operator+=(TArray&& Other)
+		{
+			Append(MoveTemp(Other));
+			return *this;
+		}
+
+	public:
+
 		// Content modifier functions.
 
 		/**
@@ -354,6 +396,117 @@ namespace Nexus
 			return Index;
 		}
 
+		/**
+		 * Adds a raw array of elements to the end of the TArray.
+		 *
+		 * @param Ptr   A pointer to an array of elements to add.
+		 * @param Count The number of elements to insert from Ptr.
+		 */
+		void Append(const FElementType* Ptr, FSizeType Count)
+		{
+			Check(Ptr != nullptr || Count == 0);
+
+			FSizeType Pos = AddUninitialized(Count);
+			ConstructItems<FElementType>(GetData() + Pos, Ptr, Count);
+		}
+
+		/**
+		 * Adds an initializer list of elements to the end of the TArray.
+		 *
+		 * @param InitList The initializer list of elements to add.
+		 */
+		FORCEINLINE void Append(std::initializer_list<FElementType> InitList)
+		{
+			FSizeType Count = static_cast<FSizeType>(InitList.size());
+
+			FSizeType Pos = AddUninitialized(Count);
+			ConstructItems<FElementType>(GetData() + Pos, InitList.begin(), Count);
+		}
+
+		/**
+		 * Appends the specified array to this array.
+		 *
+		 * Allocator changing version.
+		 *
+		 * @param Source The array to append.
+		 */
+		template <typename FOtherElementType, typename FOtherAllocator>
+		void Append(const TArray<FOtherElementType, FOtherAllocator>& Source)
+		{
+			Check((void*)this != (void*)&Source);
+
+			FSizeType SourceCount = Source.Num();
+			if (!SourceCount)
+			{
+				return;
+			}
+
+			Reserve(ArrayNum + SourceCount);
+			ConstructItems<FElementType>(GetData() + ArrayNum, Source.GetData(), SourceCount);
+
+			ArrayNum += SourceCount;
+		}
+
+		/**
+		 * Appends the specified array to this array.
+		 *
+		 * @param Source The array to append.
+		 */
+		template <typename FOtherElementType, typename FOtherAllocator>
+		void Append(TArray<FOtherElementType, FOtherAllocator>&& Source)
+		{
+			Check((void*)this != (void*)&Source);
+
+			FSizeType SourceCount = Source.Num();
+			if (!SourceCount)
+			{
+				return;
+			}
+
+			Reserve(ArrayNum + SourceCount);
+			RelocateConstructItems<FElementType>(GetData() + ArrayNum, Source.GetData(), SourceCount);
+
+			Source.ArrayNum = 0;
+			ArrayNum += SourceCount;
+		}
+
+		/**
+		 * Same as empty, but doesn't change memory allocations, unless the new size is larger than
+		 * the current array. It calls the destructors on held items if needed and then zeros the ArrayNum.
+		 *
+		 * @param NewSize The expected usage size after calling this function.
+		 */
+		void Reset(FSizeType NewSize = 0)
+		{
+			if (NewSize <= ArrayMax)
+			{
+				DestructItems(GetData(), ArrayNum);
+				ArrayNum = 0;
+			}
+			else
+			{
+				Empty(NewSize);
+			}
+		}
+
+		/**
+		 * Empties the array. It calls the destructors on held items if needed.
+		 *
+		 * @param Slack (Optional) The expected usage size after empty operation. Default is 0.
+		 */
+		void Empty(FSizeType Slack = 0)
+		{
+			DestructItems(GetData(), ArrayNum);
+
+			Check(Slack >= 0);
+			ArrayNum = 0;
+
+			if (ArrayMax != Slack)
+			{
+				ResizeTo(Slack);
+			}
+		}
+
 	public:
 
 		// Filter functions.
@@ -375,6 +528,43 @@ namespace Nexus
 				}
 			}
 			return false;
+		}
+
+		/**
+		 * Finds element within the array.
+		 *
+		 * @param Item Item to look for.
+		 * @param Index Will contain the found index.
+		 * @returns True if found. False otherwise.
+		 * @see FindLast, FindLastByPredicate
+		 */
+		FORCEINLINE bool Find(const FElementType& Item, FSizeType& Index) const
+		{
+			Index = this->Find(Item);
+
+			return Index != INVALID_INDEX;
+		}
+
+		/**
+		 * Finds element within the array.
+		 *
+		 * @param Item Item to look for.
+		 * @returns Index of the found element. INDEX_NONE otherwise.
+		 * @see FindLast, FindLastByPredicate
+		 */
+		FSizeType Find(const FElementType& Item) const
+		{
+			const FElementType* RESTRICT Start = GetData();
+
+			for (const FElementType* RESTRICT Data = Start, *RESTRICT DataEnd = Data + ArrayNum; Data != DataEnd; ++Data)
+			{
+				if (*Data == Item)
+				{
+					return static_cast<FSizeType>(Data - Start);
+				}
+			}
+
+			return INVALID_INDEX;
 		}
 
 	public:
@@ -506,10 +696,30 @@ namespace Nexus
 		 */
 		FORCENOINLINE void ResizeTo(FSizeType NewMax)
 		{
+			if (NewMax)
+			{
+				NewMax = AllocatorInstance.CalculateSlackReserve(NewMax, sizeof(FElementType));
+			}
+
 			if (NewMax != ArrayMax)
 			{
 				ArrayMax = NewMax;
 				AllocatorInstance.ResizeAllocation(ArrayNum, ArrayMax, sizeof(FElementType));
+			}
+		}
+
+		/**
+		 * Reserves memory such that the array can contain at least Number elements.
+		 *
+		 * @param Number The number of elements that the array should be able to contain after allocation.
+		 * @see Shrink
+		 */
+		FORCEINLINE void Reserve(FSizeType Number)
+		{
+			Check(Number >= 0);
+			if (Number > ArrayMax)
+			{
+				ResizeTo(Number);
 			}
 		}
 
@@ -645,7 +855,7 @@ namespace Nexus
 		/**
 		 *
 		 */
-		FORCEINLINE bool CompareItems(const FElementType* A, const FElementType* B, FSizeType Count)
+		FORCEINLINE bool CompareItems(const FElementType* A, const FElementType* B, FSizeType Count) const
 		{
 			if constexpr (TTypeTraits<FElementType>::IsBytewiseComparable)
 			{

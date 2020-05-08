@@ -13,4 +13,11 @@ namespace Nexus
 
 	};
 
+	enum
+	{
+
+		INVALID_INDEX = -1
+
+	};
+
 }
