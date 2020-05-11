@@ -382,6 +382,42 @@ namespace Nexus
 		}
 
 		/**
+		 * Removes an element (or elements) at given location optionally shrinking
+		 * the array.
+		 *
+		 * This version is much more efficient than RemoveAt (O(Count) instead of
+		 * O(ArrayNum)), but does not preserve the order.
+		 *
+		 * @param Index Location in array of the element to remove.
+		 * @param Count (Optional) Number of elements to remove. Default is 1.
+		 * @param bAllowShrinking (Optional) Tells if this call can shrink array if
+		 *                        suitable after remove. Default is true.
+		 */
+		FORCEINLINE void RemoveAtSwap(FSizeType Index)
+		{
+			RemoveAtSwapImpl(Index, 1, true);
+		}
+
+		/**
+		 * Removes an element (or elements) at given location optionally shrinking
+		 * the array.
+		 *
+		 * This version is much more efficient than RemoveAt (O(Count) instead of
+		 * O(ArrayNum)), but does not preserve the order.
+		 *
+		 * @param Index Location in array of the element to remove.
+		 * @param Count (Optional) Number of elements to remove. Default is 1.
+		 * @param bAllowShrinking (Optional) Tells if this call can shrink array if
+		 *                        suitable after remove. Default is true.
+		 */
+		template <typename FCountType>
+		FORCEINLINE void RemoveAtSwap(FSizeType Index, FCountType Count, bool bAllowShrinking = true)
+		{
+			static_assert(!TAreTypesEqual<FCountType, bool>::Value, "TArray::RemoveAtSwap: unexpected bool passed as the 'Count' argument.");
+			RemoveAtSwapImpl(Index, Count, bAllowShrinking);
+		}
+
+		/**
 		 * Constructs a new item at the end of the array, possibly reallocating the whole array to fit.
 		 *
 		 * @param Args	The arguments to forward to the constructor of the new item.
@@ -928,12 +964,47 @@ namespace Nexus
 					FMemory::Memmove
 					(
 						static_cast<uint8*>(AllocatorInstance.GetAllocation()) + (Index) * sizeof(FElementType),
-						static_cast<uint8*>(AllocatorInstance.GetAllocation()) + static_cast<PlatformSizeType>(Index + Count) * sizeof(FElementType),
+						static_cast<uint8*>(AllocatorInstance.GetAllocation()) + static_cast<PlatformSizeType>(Index) + static_cast<PlatformSizeType>(Count) * sizeof(FElementType),
 						NumToMove * sizeof(FElementType)
 					);
 				}
 
 				ArrayNum -= Count;
+				if (bAllowShrinking)
+				{
+					ResizeShrink();
+				}
+			}
+		}
+
+		/**
+		 *
+		 */
+		void RemoveAtSwapImpl(FSizeType Index, FSizeType Count = 1, bool bAllowShrinking = true)
+		{
+			if (Count)
+			{
+				CheckInvariants();
+				Check((Count >= 0) & (Index >= 0) & (Index + Count <= ArrayNum));
+
+				DestructItems(GetData() + Index, Count);
+
+				// Replace the elements in the hole created by the removal with elements from the end of the array, so the range of indices used by the array is contiguous.
+				const FSizeType NumElementsInHole = Count;
+				const FSizeType NumElementsAfterHole = ArrayNum - (Index + Count);
+				const FSizeType NumElementsToMoveIntoHole = FMath::Min(NumElementsInHole, NumElementsAfterHole);
+
+				if (NumElementsToMoveIntoHole)
+				{
+					FMemory::Memcpy(
+						static_cast<uint8*>(AllocatorInstance.GetAllocation()) + (Index) * sizeof(FElementType),
+						static_cast<uint8*>(AllocatorInstance.GetAllocation()) + (ArrayNum - NumElementsToMoveIntoHole) * sizeof(FElementType),
+						NumElementsToMoveIntoHole * sizeof(FElementType)
+					);
+				}
+
+				ArrayNum -= Count;
+
 				if (bAllowShrinking)
 				{
 					ResizeShrink();

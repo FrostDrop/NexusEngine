@@ -5,6 +5,8 @@
 #include "HAL/MallocAnsi.h"
 #include "Containers/Array.h"
 
+#include <vector>
+
 namespace Nexus
 {
 
@@ -33,17 +35,24 @@ namespace Nexus
 
 			Array.Insert(3, 1);
 
-			TArray<uint32> Other = Array;
-			Other.Add(4);
-			Other.Insert(5, 0);
-
-			Array = Other;
-
-			Array += Other;
-			Array += { 1, 2, 3, 4, 5 };
+			for (uint32 i = 0; i < Array.Num(); ++i)
+				Array.RemoveAt(0);
 
 			for (uint32 i = 0; i < Array.Num(); ++i)
 				std::cout << Array[i] << std::endl;
+
+
+			std::vector<uint32> Vector;
+			Vector.push_back(1);
+			Vector.push_back(2);
+
+			Vector.insert(Vector.begin() + 1, 3);
+			
+			for (uint32 i = 0; i < Vector.size(); ++i)
+				Vector.erase(Vector.begin());
+
+			for (uint32 i = 0; i < Vector.size(); ++i)
+				std::cout << Vector[i] << std::endl;
 		}
 
 	};
