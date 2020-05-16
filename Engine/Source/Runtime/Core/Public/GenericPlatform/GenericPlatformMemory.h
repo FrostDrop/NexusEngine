@@ -31,6 +31,22 @@ namespace Nexus
 		/**
 		 *
 		 */
+		static FORCEINLINE void* Memset(void* Dest, uint8 Char, PlatformSizeType Size)
+		{
+			return memset(Dest, Char, Size);
+		}
+
+		/**
+		 *
+		 */
+		static FORCEINLINE void* Memzero(void* Dest, PlatformSizeType Size)
+		{
+			return memset(Dest, 0, Size);
+		}
+
+		/**
+		 *
+		 */
 		static FORCEINLINE int32 Memcmp(const void* Buffer1, const void* Buffer2, PlatformSizeType Count)
 		{
 			return memcmp(Buffer1, Buffer2, Count);
