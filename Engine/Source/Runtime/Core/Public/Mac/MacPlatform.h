@@ -7,6 +7,8 @@ namespace Nexus
 	struct FMacPlatformTypes : public FGenericPlatformTypes
 	{
 
+		using PlatformSizeType = size_t;
+
 	};
 
 	using FPlatformTypes = FMacPlatformTypes;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "AssertionMacros.h"
+
 
 namespace Nexus
 {
@@ -8,6 +10,13 @@ namespace Nexus
 	{
 
 		ForceInit = 0
+
+	};
+
+	enum
+	{
+
+		INVALID_INDEX = -1
 
 	};
 

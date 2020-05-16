@@ -11,6 +11,9 @@
 	#define NEXUS_PLATFORM_MAC 0
 #endif
 
+/** Include C-Runtime. */
+#include "PlatformCrt.h"
+
 /** Include generic platform header. */
 #include "GenericPlatform/GenericPlatform.h"
 
@@ -39,6 +42,14 @@ namespace Nexus
 	using int32 = FPlatformTypes::int32;
 	using int64 = FPlatformTypes::int64;
 
+	using AnsiChar = FPlatformTypes::AnsiChar;
+	using WideChar = FPlatformTypes::WideChar;
+	using Char8 = FPlatformTypes::Char8;
+	using Char16 = FPlatformTypes::Char16;
+	using Char32 = FPlatformTypes::Char32;
+
+	using PlatformSizeType = FPlatformTypes::PlatformSizeType;
+
 }
 
 /** API definition. */
@@ -54,6 +65,11 @@ namespace Nexus
 #endif
 #ifndef FORCENOINLINE
 	#define FORCENOINLINE
+#endif
+
+/** Restrict. */
+#ifndef RESTRICT
+	#define RESTRICT __restrict
 #endif
 
 /** Base defines. */
