@@ -19,6 +19,7 @@ namespace Nexus
 		using FSizeType = uint32;
 
 		enum { RequireRangeCheck = true };
+		enum { SupportsMove = true };
 
 	public:
 

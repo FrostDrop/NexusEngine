@@ -29,15 +29,14 @@ namespace Nexus
 
 		virtual void Run() override
 		{
-			TBitArray BitArray = TBitArray(1, 32);
+			TBitArray Other = TBitArray(true, 32);
+			TBitArray BitArray = MoveTemp(Other);
 
+			BitArray.Add(false);
 			BitArray.Add(true);
 			BitArray.Add(false);
 
-			BitArray.SetRange(0, 2, true);
-			BitArray.RemoveAt(0);
-
-			std::cout << BitArray[0] << std::endl;
+			std::cout << BitArray.FindLast(false) << std::endl;
 		}
 
 	};

@@ -3,6 +3,8 @@
 #include "CoreTypes.h"
 #include "Math/MathUtility.h"
 
+#include "Templates/EnableIf.h"
+
 #include "HAL/Allocators/AnsiAllocator.h"
 
 
@@ -24,7 +26,7 @@ namespace Nexus
 		/**
 		 *
 		 */
-		FORCEINLINE FBitReference(uint32& InData, uint32 InMask)
+		FORCEINLINE FBitReference(uint32& InData, const uint32 InMask)
 			: Data(InData)
 			, Mask(InMask)
 		{
@@ -109,7 +111,7 @@ namespace Nexus
 		/**
 		 *
 		 */
-		FORCEINLINE FConstBitReference(const uint32& InData, uint32 InMask)
+		FORCEINLINE FConstBitReference(const uint32& InData, const uint32 InMask)
 			: Data(InData)
 			, Mask(InMask)
 		{
@@ -149,19 +151,27 @@ namespace Nexus
 		/**
 		 *
 		 */
-		FORCEINLINE explicit FRelativeBitReference(uint32 BitIndex)
+		FORCEINLINE explicit FRelativeBitReference(const uint32 BitIndex)
 			: DwordIndex(BitIndex >> NUM_BITS_PER_DWORD_LOG_TWO)
 			, Mask(1 << (BitIndex & (NUM_BITS_PER_DWORD - 1)))
 		{
 		}
 
-		uint32  DwordIndex;
+		uint32 DwordIndex;
 		uint32 Mask;
+
 	};
 
-	template<typename FAllocator = FAnsiAllocator>
+	/**
+	 *
+	 */
+	template<typename FInAllocator = FAnsiAllocator>
 	class TBitArray
 	{
+
+	public:
+
+		using FAllocator = FInAllocator;
 
 	public:
 
@@ -408,8 +418,127 @@ namespace Nexus
 			Init(Value, InNumBits);
 		}
 
+		/**
+		 * Copy constructor.
+		 */
+		FORCEINLINE TBitArray(const TBitArray& Copy)
+			: NumBits(0)
+			, MaxBits(0)
+		{
+			*this = Copy;
+		}
+
+		/**
+		 * Move constructor.
+		 */
+		FORCEINLINE TBitArray(TBitArray&& Other)
+		{
+			MoveOrCopy(*this, Other);
+		}
 
 	public:
+
+		//////////////////////////////////////////////////
+		// Move or copy. /////////////////////////////////
+		//////////////////////////////////////////////////
+
+		/**
+		 *
+		 */
+		template <typename FBitArrayType>
+		static FORCEINLINE typename TEnableIf<FBitArrayType::FAllocator::SupportsMove>::Type MoveOrCopy(FBitArrayType& ToArray, FBitArrayType& FromArray)
+		{
+			ToArray.AllocatorInstance.MoveToEmpty(FromArray.AllocatorInstance);
+
+			ToArray.NumBits = FromArray.NumBits;
+			ToArray.MaxBits = FromArray.MaxBits;
+			FromArray.NumBits = 0;
+			FromArray.MaxBits = 0;
+		}
+
+		/**
+		 *
+		 */
+		template <typename FBitArrayType>
+		static FORCEINLINE typename TEnableIf<!FBitArrayType::FAllocator::SupportsMove>::Type MoveOrCopy(FBitArrayType& ToArray, FBitArrayType& FromArray)
+		{
+			ToArray = FromArray;
+		}
+
+	public:
+
+		//////////////////////////////////////////////////
+		// Assignment operators. /////////////////////////
+		//////////////////////////////////////////////////
+
+		/**
+		 * Assignment operator.
+		 */
+		FORCEINLINE TBitArray& operator=(const TBitArray& Copy)
+		{
+			if (this == &Copy)
+			{
+				return *this;
+			}
+
+			Empty(Copy.Num());
+			NumBits = Copy.NumBits;
+
+			if (NumBits)
+			{
+				const uint32 NumDwords = FMath::DivideAndRoundUp(MaxBits, NUM_BITS_PER_DWORD);
+				FMemory::Memcpy(GetData(), Copy.GetData(), NumDwords * sizeof(uint32));
+			}
+
+			return *this;
+		}
+
+		/**
+		 * Move assignment operator.
+		 */
+		FORCEINLINE TBitArray& operator=(TBitArray&& Other)
+		{
+			if (this != &Other)
+			{
+				MoveOrCopy(*this, Other);
+			}
+
+			return *this;
+		}
+
+	public:
+
+		//////////////////////////////////////////////////
+		// Comparison operators. /////////////////////////
+		//////////////////////////////////////////////////
+
+		/**
+		 *
+		 */
+		FORCEINLINE bool operator==(const TBitArray<FAllocator>& Other) const
+		{
+			if (Num() != Other.Num())
+			{
+				return false;
+			}
+
+			uint32 NumBytes = FMath::DivideAndRoundUp(NumBits, NUM_BITS_PER_DWORD) * sizeof(uint32);
+			return FMemory::Memcmp(GetData(), Other.GetData(), NumBytes) == 0;
+		}
+
+		/**
+		 *
+		 */
+		FORCEINLINE bool operator!=(const TBitArray<FAllocator>& Other)
+		{
+			return !(*this == Other);
+		}
+
+	public:
+
+		//////////////////////////////////////////////////
+		// Index operators. //////////////////////////////
+		//////////////////////////////////////////////////
 
 		/**
 		 *
@@ -463,7 +592,7 @@ namespace Nexus
 		 *
 		 * @Number  The number of bits to reserve space for.
 		 */
-		void Reserve(uint32 Number)
+		void Reserve(const uint32 Number)
 		{
 			if (Number > MaxBits)
 			{
@@ -522,7 +651,7 @@ namespace Nexus
 		 * Adds multiple bits to the array with the given value.
 		 * @return The index of the first added bit.
 		 */
-		int32 Add(const bool Value, uint32 NumToAdd)
+		uint32 Add(const bool Value, uint32 NumToAdd)
 		{
 			const uint32 Index = NumBits;
 
@@ -632,6 +761,94 @@ namespace Nexus
 			NumBits -= NumBitsToRemove;
 		}
 
+	public:
+
+		//////////////////////////////////////////////////
+		// Filter operations. ////////////////////////////
+		//////////////////////////////////////////////////
+
+		/**
+		 * Finds the first true/false bit in the array, and returns the bit index.
+		 * If there is none, INVALID_INDEX is returned.
+		 */
+		uint32 Find(bool bValue) const
+		{
+			const uint32 Test = bValue ? 0u : static_cast<uint32>(-1);
+
+			const uint32* RESTRICT DwordArray = GetData();
+			const uint32 LocalNumBits = NumBits;
+			const uint32 DwordCount = FMath::DivideAndRoundUp(LocalNumBits, NUM_BITS_PER_DWORD);
+
+			uint32 DwordIndex = 0;
+			while (DwordIndex < DwordCount && DwordArray[DwordIndex] == Test)
+			{
+				++DwordIndex;
+			}
+
+			if (DwordIndex < DwordCount)
+			{
+				const uint32 Bits = bValue ? (DwordArray[DwordIndex]) : ~(DwordArray[DwordIndex]);
+				Assume(Bits != 0);
+
+				const uint32 LowestBitIndex = FMath::CountTrailingZeros(Bits) + (DwordIndex << NUM_BITS_PER_DWORD_LOG_TWO);
+				if (LowestBitIndex < LocalNumBits)
+				{
+					return LowestBitIndex;
+				}
+			}
+
+			return INVALID_INDEX;
+		}
+
+		/**
+		* Finds the last true/false bit in the array, and returns the bit index.
+		* If there is none, INVALID_INDEX is returned.
+		*/
+		uint32 FindLast(bool bValue) const
+		{
+			const uint32 LocalNumBits = NumBits;
+
+			uint32 SlackIndex = ((LocalNumBits - 1) % NUM_BITS_PER_DWORD) + 1;
+			uint32 Mask = ~0u >> (NUM_BITS_PER_DWORD - SlackIndex);
+
+			uint32 DwordIndex = FMath::DivideAndRoundUp(LocalNumBits, NUM_BITS_PER_DWORD);
+			const uint32* RESTRICT DwordArray = GetData();
+			const uint32 Test = bValue ? 0u : ~0u;
+
+			for (;;)
+			{
+				if (DwordIndex == 0)
+				{
+					return INVALID_INDEX;
+				}
+
+				--DwordIndex;
+
+				if ((DwordArray[DwordIndex] & Mask) != (Test & Mask))
+				{
+					break;
+				}
+
+				Mask = ~0u;
+			}
+
+			const uint32 Bits = (bValue ? DwordArray[DwordIndex] : ~DwordArray[DwordIndex]) & Mask;
+			Assume(Bits != 0);
+
+			uint32 BitIndex = (NUM_BITS_PER_DWORD - 1) - FMath::CountLeadingZeros(Bits);
+
+			uint32 Result = BitIndex + (DwordIndex << NUM_BITS_PER_DWORD_LOG_TWO);
+			return Result;
+		}
+
+		/**
+		 *
+		 */
+		FORCEINLINE bool Contains(bool bValue) const
+		{
+			return Find(bValue) != INVALID_INDEX;
+		}
+
 	private:
 
 		/**
@@ -674,6 +891,16 @@ namespace Nexus
 		FORCEINLINE uint32 Num() const 
 		{ 
 			return NumBits; 
+		}
+
+		/**
+		 * Helper function to return the amount of memory allocated by this container
+		 *
+		 * @return number of bytes allocated by this container
+		 */
+		uint32 GetAllocatedSize(void) const
+		{
+			return FMath::DivideAndRoundUp(MaxBits, NUM_BITS_PER_DWORD) * sizeof(uint32);
 		}
 
 	private:
