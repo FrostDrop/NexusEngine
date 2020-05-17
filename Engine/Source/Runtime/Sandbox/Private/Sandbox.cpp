@@ -4,6 +4,7 @@
 #include "HAL/Memory.h"
 #include "HAL/MallocAnsi.h"
 #include "Containers/Array.h"
+#include "Containers/BitArray.h"
 
 #include <vector>
 
@@ -28,31 +29,14 @@ namespace Nexus
 
 		virtual void Run() override
 		{
-			TArray<uint32> Array;
+			TBitArray Other = TBitArray(true, 32);
+			TBitArray BitArray = MoveTemp(Other);
 
-			Array.Add(1);
-			Array.Add(2);
+			BitArray.Add(false);
+			BitArray.Add(true);
+			BitArray.Add(false);
 
-			Array.Insert(3, 1);
-
-			for (uint32 i = 0; i < Array.Num(); ++i)
-				Array.RemoveAt(0);
-
-			for (uint32 i = 0; i < Array.Num(); ++i)
-				std::cout << Array[i] << std::endl;
-
-
-			std::vector<uint32> Vector;
-			Vector.push_back(1);
-			Vector.push_back(2);
-
-			Vector.insert(Vector.begin() + 1, 3);
-			
-			for (uint32 i = 0; i < Vector.size(); ++i)
-				Vector.erase(Vector.begin());
-
-			for (uint32 i = 0; i < Vector.size(); ++i)
-				std::cout << Vector[i] << std::endl;
+			std::cout << BitArray.FindLast(false) << std::endl;
 		}
 
 	};

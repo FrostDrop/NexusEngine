@@ -77,4 +77,10 @@ namespace Nexus
 	#define PLATFORM_LITTLE_ENDIAN 0
 #endif
 
+/** Assume. */
+#ifndef Assume
+	#define Assume(...)
+#endif
+
+
 

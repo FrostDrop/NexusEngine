@@ -38,6 +38,16 @@ namespace Nexus
 		return FPlatformMemory::Memmove(Dest, Src, Size);
 	}
 
+	void* FMemory::Memset(void* Dest, uint8 Char, PlatformSizeType Size)
+	{
+		return FPlatformMemory::Memset(Dest, Char, Size);
+	}
+
+	void* FMemory::Memzero(void* Dest, PlatformSizeType Size)
+	{
+		return FPlatformMemory::Memzero(Dest, Size);
+	}
+
 	int32 FMemory::Memcmp(const void* Buffer1, const void* Buffer2, PlatformSizeType Size)
 	{
 		return FPlatformMemory::Memcmp(Buffer1, Buffer2, Size);

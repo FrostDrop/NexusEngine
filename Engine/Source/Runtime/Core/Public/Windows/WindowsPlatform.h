@@ -25,5 +25,10 @@ namespace Nexus
 #define DLLIMPORT __declspec(dllimport)
 #define DLLEXPORT __declspec(dllexport)
 
-/** Bas defines. */
+/** Base defines. */
 #define PLATFORM_LITTLE_ENDIAN 1
+
+/** Assume. */
+#if !defined(__clang__) || defined(_MSC_VER)
+	#define Assume(expr) __assume(expr)
+#endif

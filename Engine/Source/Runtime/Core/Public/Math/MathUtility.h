@@ -29,17 +29,24 @@ namespace Nexus
 	{
 
 		/** Multiplies value by itself. */
-		template< class T >
+		template<typename T>
 		static FORCEINLINE T Square(const T A)
 		{
 			return A * A;
 		}
 
 		/** Clamps X to be between Min and Max, inclusive */
-		template< class T >
+		template<typename T>
 		static FORCEINLINE T Clamp(const T X, const T Min, const T Max)
 		{
 			return X < Min ? Min : X < Max ? X : Max;
+		}
+
+		/** Divides two integers and rounds up */
+		template<typename T>
+		static FORCEINLINE T DivideAndRoundUp(T Dividend, T Divisor)
+		{
+			return (Dividend + Divisor - 1) / Divisor;
 		}
 
 	};
