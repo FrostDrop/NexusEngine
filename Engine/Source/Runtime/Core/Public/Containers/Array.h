@@ -39,6 +39,9 @@ namespace Nexus
 
 	}
 
+	/**
+	 *
+	 */
 	template<typename FElementType, typename FAllocator = FAnsiAllocator>
 	class TArray
 	{
@@ -433,6 +436,55 @@ namespace Nexus
 		}
 
 		/**
+		 * Adds a given number of uninitialized elements into the array.
+		 *
+		 * Caution, AddUninitialized() will create elements without calling
+		 * the constructor and this is not appropriate for element types that
+		 * require a constructor to function properly.
+		 *
+		 * @param Count Number of elements to add.
+		 * @returns Number of elements in array before addition.
+		 */
+		FORCEINLINE FSizeType AddUninitialized(FSizeType Count = 1)
+		{
+			CheckInvariants();
+			Check(Count >= 0);
+
+			const FSizeType OldNum = ArrayNum;
+
+			if ((ArrayNum += Count) > ArrayMax)
+			{
+				ResizeGrow(OldNum);
+			}
+
+			return OldNum;
+		}
+
+		/**
+		 *
+		 */
+		template <typename FOtherSizeType>
+		void InsertUninitialized(FSizeType Index, FOtherSizeType Count)
+		{
+			CheckInvariants();
+			Check((Count >= 0) & (Index >= 0) & (Index <= ArrayNum));
+
+			FSizeType NewNum = Count;
+			Check(static_cast<FOtherSizeType>(NewNum) == Count);
+
+
+			const FSizeType OldNum = ArrayNum;
+
+			if ((ArrayNum += Count) > ArrayMax)
+			{
+				ResizeGrow(OldNum);
+			}
+
+			FElementType* Data = GetData() + Index;
+			RelocateConstructItems<FElementType>(Data + Count, Data, OldNum - Index);
+		}
+
+		/**
 		 * Adds a raw array of elements to the end of the TArray.
 		 *
 		 * @param Ptr   A pointer to an array of elements to add.
@@ -757,55 +809,6 @@ namespace Nexus
 			{
 				ResizeTo(Number);
 			}
-		}
-
-		/**
-		 * Adds a given number of uninitialized elements into the array.
-		 *
-		 * Caution, AddUninitialized() will create elements without calling
-		 * the constructor and this is not appropriate for element types that
-		 * require a constructor to function properly.
-		 *
-		 * @param Count Number of elements to add.
-		 * @returns Number of elements in array before addition.
-		 */
-		FORCEINLINE FSizeType AddUninitialized(FSizeType Count = 1)
-		{
-			CheckInvariants();
-			Check(Count >= 0);
-
-			const FSizeType OldNum = ArrayNum;
-
-			if ((ArrayNum += Count) > ArrayMax)
-			{
-				ResizeGrow(OldNum);
-			}
-
-			return OldNum;
-		}
-
-		/**
-		 *
-		 */
-		template <typename FOtherSizeType>
-		void InsertUninitialized(FSizeType Index, FOtherSizeType Count)
-		{
-			CheckInvariants();
-			Check((Count >= 0) & (Index >= 0) & (Index <= ArrayNum));
-
-			FSizeType NewNum = Count;
-			Check(static_cast<FOtherSizeType>(NewNum) == Count);
-
-
-			const FSizeType OldNum = ArrayNum;
-
-			if ((ArrayNum += Count) > ArrayMax)
-			{
-				ResizeGrow(OldNum);
-			}
-
-			FElementType* Data = GetData() + Index;
-			RelocateConstructItems<FElementType>(Data + Count, Data, OldNum - Index);
 		}
 
 		/**

@@ -76,10 +76,24 @@ namespace Nexus
 #ifndef PLATFORM_LITTLE_ENDIAN
 	#define PLATFORM_LITTLE_ENDIAN 0
 #endif
+#ifndef PLATFORM_CHAR_IS_CHAR16
+	#define PLATFORM_CHAR_IS_CHAR16	0
+#endif
 
 /** Assume. */
 #ifndef Assume
 	#define Assume(...)
+#endif
+
+/** Text. */
+#if !defined(TEXT)
+	#if PLATFORM_CHAR_IS_CHAR16
+		#define TEXT_PASTE(x) u ## x
+	#else
+		#define TEXT_PASTE(x) L ## x
+	#endif
+
+	#define TEXT(x) TEXT_PASTE(x)
 #endif
 
 

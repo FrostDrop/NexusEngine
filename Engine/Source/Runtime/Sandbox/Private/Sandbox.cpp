@@ -5,8 +5,8 @@
 #include "HAL/MallocAnsi.h"
 #include "Containers/Array.h"
 #include "Containers/BitArray.h"
+#include "Containers/String.h"
 
-#include <vector>
 
 namespace Nexus
 {
@@ -29,14 +29,11 @@ namespace Nexus
 
 		virtual void Run() override
 		{
-			TBitArray Other = TBitArray(true, 32);
-			TBitArray BitArray = MoveTemp(Other);
+			FString Message = FString(11, "Nexus Message");
 
-			BitArray.Add(false);
-			BitArray.Add(true);
-			BitArray.Add(false);
+			std::cout << *Message << std::endl;
+			std::cout << Message[0] << std::endl;
 
-			std::cout << BitArray.FindLast(false) << std::endl;
 		}
 
 	};
