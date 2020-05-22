@@ -13,20 +13,15 @@ namespace Nexus
 	template<typename FEncoding>
 	struct TInstantiateEmptyString { static_assert(sizeof(FEncoding) == 0, "Cannot instantiate empty string of unknown char type."); };
 
-	template<>
-	struct TInstantiateEmptyString<AnsiChar> { static constexpr AnsiChar* Value = ""; };
+	template<> struct TInstantiateEmptyString<AnsiChar> { static constexpr const AnsiChar* Value = ""; };
+	template<> struct TInstantiateEmptyString<WideChar> { static constexpr const WideChar* Value = L""; };
 
-	template<>
-	struct TInstantiateEmptyString<WideChar> { static constexpr WideChar* Value = L""; };
 
 	template<typename FEncoding>
 	struct TInstantiateNullTerminator { static_assert(sizeof(FEncoding) == 0, "Cannot instantiate null termination character of unknown char type."); };
 
-	template<>
-	struct TInstantiateNullTerminator<AnsiChar> { static constexpr AnsiChar Value = '\0'; };
-
-	template<>
-	struct TInstantiateNullTerminator<WideChar> { static constexpr WideChar Value = L'\0'; };
+	template<> struct TInstantiateNullTerminator<AnsiChar> { static constexpr const AnsiChar Value = '\0'; };
+	template<> struct TInstantiateNullTerminator<WideChar> { static constexpr const WideChar Value = L'\0'; };
 
 	/**
 	 *
@@ -139,7 +134,7 @@ namespace Nexus
 
 				if (Length)
 				{
-					FMemory::Memcpy(Data.GetData(), Other, Len * sizeof(FCharType));
+					FMemory::Memcpy(Data.GetData(), Other, Length * sizeof(FCharType));
 				}
 			}
 
@@ -215,7 +210,7 @@ namespace Nexus
 
 			if (FCharType* DataPtr = Data.GetData())
 			{
-				*DataPtr = TInstantiateNullTerminator<FCharType>;
+				*DataPtr = TInstantiateNullTerminator<FCharType>::Value;
 			}
 		}
 

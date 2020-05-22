@@ -6,7 +6,7 @@
 namespace Nexus
 {
 
-	CORE_API struct FLinuxPlatformMemory
+	struct CORE_API FLinuxPlatformMemory
 		: public FGenericPlatformMemory
 	{
 
