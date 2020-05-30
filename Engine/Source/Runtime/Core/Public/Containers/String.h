@@ -1,27 +1,18 @@
 #pragma once
 
 #include "CoreTypes.h"
+
 #include "Templates/IsCharType.h"
 #include "Templates/SelectType.h"
+#include "Templates/IsTriviallyCopyAssignable.h"
+#include "Templates/InstantiateEmptyString.h"
+#include "Templates/InstantiateNullTerminator.h"
 
 #include "Array.h"
 
 
 namespace Nexus
 {
-
-	template<typename FEncoding>
-	struct TInstantiateEmptyString { static_assert(sizeof(FEncoding) == 0, "Cannot instantiate empty string of unknown char type."); };
-
-	template<> struct TInstantiateEmptyString<AnsiChar> { static constexpr const AnsiChar* Value = ""; };
-	template<> struct TInstantiateEmptyString<WideChar> { static constexpr const WideChar* Value = L""; };
-
-
-	template<typename FEncoding>
-	struct TInstantiateNullTerminator { static_assert(sizeof(FEncoding) == 0, "Cannot instantiate null termination character of unknown char type."); };
-
-	template<> struct TInstantiateNullTerminator<AnsiChar> { static constexpr const AnsiChar Value = '\0'; };
-	template<> struct TInstantiateNullTerminator<WideChar> { static constexpr const WideChar Value = L'\0'; };
 
 	/**
 	 *
@@ -160,7 +151,7 @@ namespace Nexus
 		 */
 		FORCEINLINE FCharType& operator[](uint32 Index)
 		{
-			Check(Index < Num());
+			Check(Index != INVALID_INDEX && Index < Num());
 			return Data.GetData()[Index];
 		}
 
@@ -172,7 +163,7 @@ namespace Nexus
 		 */
 		FORCEINLINE const FCharType& operator[](uint32 Index) const
 		{
-			Check(Index < Num());
+			Check(Index != INVALID_INDEX && Index < Num());
 			return Data.GetData()[Index];
 		}
 
@@ -183,6 +174,45 @@ namespace Nexus
 		//////////////////////////////////////////////////
 
 		/**
+		 * Concatenate this with given char
+		 *
+		 * @param inChar other Char to be concatenated onto the end of this string
+		 * @return reference to this
+		 */
+		template <typename CharType>
+		FORCEINLINE typename TEnableIf<TIsCharType<CharType>::Value, FString&>::Type operator+=(CharType InChar)
+		{
+			AppendChar(InChar);
+			return *this;
+		}
+
+		/**
+		 * Concatenate this with given string
+		 *
+		 * @param Str array of TCHAR to be concatenated onto the end of this
+		 * @return reference to this
+		 */
+		FORCEINLINE FString& operator+=(const FCharType* CharArray)
+		{
+			PlatformSizeType Length = FPlatformString::Strlen(CharArray);
+			AppendChars(CharArray, static_cast<uint32>(Length));
+
+			return *this;
+		}
+
+		/**
+		 * Concatenate this with given string
+		 *
+		 * @param Str other string to be concatenated onto the end of this
+		 * @return reference to this
+		 */
+		FORCEINLINE FString& operator+=(const FString& String)
+		{
+			Append(String);
+			return *this;
+		}
+
+		/**
 		 * Get pointer to the string
 		 *
 		 * @Return Pointer to Array of FCharType if Num, otherwise the empty string
@@ -190,6 +220,102 @@ namespace Nexus
 		FORCEINLINE const FCharType* operator*() const
 		{
 			return Data.Num() ? Data.GetData() : TInstantiateEmptyString<FCharType>::Value;
+		}
+
+	public:
+
+		/**
+		 * Concatenate this with given char
+		 *
+		 * @param InChar other Char to be concatenated onto the end of this string
+		 * @return reference to this
+		 */
+		FORCEINLINE void AppendChar(const FCharType InChar)
+		{
+			CheckInvariants();
+
+			if (InChar != 0)
+			{
+				uint32 InsertIndex = (Data.Num() > 0) ? Data.Num() - 1 : 0;
+				uint32 InsertCount = (Data.Num() > 0) ? 1 : 2;
+
+				Data.AddUninitialized(InsertCount);
+				Data[InsertIndex] = InChar;
+				Data[InsertIndex + 1] = 0;
+			}
+		}
+
+		/**
+		 * Appends an array of characters to the string.
+		 *
+		 * @param Array A pointer to the start of an array of characters to append.  This array need not be null-terminated, and null characters are not treated specially.
+		 * @param Count The number of characters to copy from Array.
+		 */
+		FORCEINLINE void AppendChars(const FCharType* Array, uint32 Count)
+		{
+			if (!Count)
+				return;
+
+			Check(Array);
+			CheckInvariants();
+
+			uint32 Index = Data.Num();
+
+			Data.AddUninitialized(Count + (Index ? 0 : 1));
+			FCharType* EndPtr = Data.GetData() + Index - (Index ? 1 : 0);
+
+			CopyAssignItems(EndPtr, Array, Count);
+			*(EndPtr + Count) = 0;
+		}
+
+		/**
+		 * Concatenate this with given string
+		 *
+		 * @param Str other string to be concatenated onto the end of this
+		 * @return reference to this
+		 */
+		FORCEINLINE void Append(const FString& String)
+		{
+			CheckInvariants();
+			String.CheckInvariants();
+
+			AppendChars(String.Data.GetData(), String.Num());
+		}
+
+		/**
+		 *
+		 */
+		FORCEINLINE void InsertAt(uint32 Index, FCharType Character)
+		{
+			if (Character != 0)
+			{
+				if (Data.Num() == 0)
+				{
+					AppendChar(Character);
+				}
+				else
+				{
+					Data.Insert(Character, Index);
+				}
+			}
+		}
+
+		/**
+		 *
+		 */
+		FORCEINLINE void InsertAt(uint32 Index, const FString& Characters)
+		{
+			if (Characters.Num())
+			{
+				if (Data.Num() == 0)
+				{
+					Append(Characters);
+				}
+				else
+				{
+					Data.Insert(Characters.Data.GetData(), Characters.Num(), Index);
+				}
+			}
 		}
 
 	public:
@@ -212,6 +338,16 @@ namespace Nexus
 			{
 				*DataPtr = TInstantiateNullTerminator<FCharType>::Value;
 			}
+		}
+
+		/**
+		 * Create empty string of given size with zero terminating character
+		 *
+		 * @param Slack length of empty string to create
+		 */
+		FORCEINLINE void Empty(int32 Slack = 0)
+		{
+			Data.Empty(Slack);
 		}
 
 		/**
@@ -271,6 +407,53 @@ namespace Nexus
 		FORCEINLINE PlatformSizeType GetAllocatedSize() const
 		{
 			return Data.GetAllocatedSize();
+		}
+
+	private:
+
+		//////////////////////////////////////////////////
+		// Raw memory functions. /////////////////////////
+		//////////////////////////////////////////////////
+
+		/**
+		 * Copy assigns a range of items.
+		 *
+		 * @param	Dest		The memory location to start assigning to.
+		 * @param	Source		A pointer to the first item to assign.
+		 * @param	Count		The number of elements to assign.
+		 */
+		FORCEINLINE void CopyAssignItems(FCharType* Dest, const FCharType* Source, uint32 Count)
+		{
+			if constexpr (TIsTriviallyCopyAssignable<FCharType>::Value)
+			{
+				FMemory::Memcpy(Dest, Source, sizeof(FCharType) * Count);
+			}
+			else
+			{
+				while (Count)
+				{
+					*Dest = *Source;
+					++Dest;
+					++Source;
+					--Count;
+				}
+			}
+		}
+
+	private:
+
+		//////////////////////////////////////////////////
+		// Utility functions. ////////////////////////////
+		//////////////////////////////////////////////////
+
+		/**
+		 * Run slow checks on this string
+		 */
+		FORCEINLINE void CheckInvariants() const
+		{
+			uint32 Num = Data.Num();
+			Check(!Num || !Data.GetData()[Num - 1]);
+			Check(Data.GetSlack() >= 0);
 		}
 
 	private:

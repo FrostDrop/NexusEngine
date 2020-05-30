@@ -3,15 +3,10 @@
 #include "CoreTypes.h"
 
 #include "Templates/EnableIf.h"
+#include "Templates/IsFixedWidthEncoding.h"
 
 namespace Nexus
 {
-
-	template<typename T>
-	struct TIsFixedWidthEncoding { enum { Value = false }; };
-
-	template<> struct TIsFixedWidthEncoding<AnsiChar> { enum { Value = true }; };
-	template<> struct TIsFixedWidthEncoding<WideChar> { enum { Value = true }; };
 
 	/**
 	 * Metafunction which tests whether two encodings are compatible.

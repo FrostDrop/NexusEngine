@@ -22,9 +22,9 @@ namespace Nexus
 		/** Character types. */
 		using AnsiChar = char;
 		using WideChar = wchar_t;
-		using Char8 = uint8;
-		using Char16 = uint16;
-		using Char32 = uint32;
+		using Char8 = char;
+		using Char16 = char16_t;
+		using Char32 = char32_t;
 
 	};
 

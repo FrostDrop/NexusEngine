@@ -7,6 +7,10 @@
 #include "Containers/BitArray.h"
 #include "Containers/String.h"
 
+#include <iostream>
+#include <string>
+#include <locale>
+#include <codecvt>
 
 namespace Nexus
 {
@@ -29,11 +33,12 @@ namespace Nexus
 
 		virtual void Run() override
 		{
-			FString Message = FString(11, "Nexus Message");
+			FString Message = "Nexus Message";
+			Message += " Haha";
+			Message += 'T';
 
+			Message.InsertAt(0, "What's up! ");
 			std::cout << *Message << std::endl;
-			std::cout << Message[0] << std::endl;
-
 		}
 
 	};

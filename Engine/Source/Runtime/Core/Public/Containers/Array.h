@@ -372,6 +372,24 @@ namespace Nexus
 		}
 
 		/**
+		 * Inserts a raw array of elements at a particular index in the TArray.
+		 *
+		 * @param Ptr A pointer to an array of elements to add.
+		 * @param Count The number of elements to insert from Ptr.
+		 * @param Index The index to insert the elements at.
+		 * @return The index of the first element inserted.
+		 */
+		FSizeType Insert(const FElementType* Ptr, FSizeType Count, FSizeType Index)
+		{
+			Check(Ptr);
+
+			InsertUninitialized(Index, Count);
+			ConstructItems<FElementType>(GetData() + Index, Ptr, Count);
+
+			return Index;
+		}
+
+		/**
 		 * Removes an element (or elements) at given location optionally shrinking
 		 * the array.
 		 *
