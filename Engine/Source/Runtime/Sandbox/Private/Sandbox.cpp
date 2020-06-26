@@ -30,7 +30,14 @@ namespace Nexus
 				FVector(0.0f, 0.0f, 0.0f)
 			);
 
-			FMatrix Inverse = Matrix.GetInverse();
+			FMatrix Other = FMatrix(
+				FVector(3.0f, 0.0f, 0.0f),
+				FVector(0.0f, 4.0f, 0.0f),
+				FVector(0.0f, 0.0f, 2.0f),
+				FVector(0.0f, 0.0f, 0.0f)
+			);
+
+			FMatrix Inverse = Matrix.GetInverse() * Other * 2.5f;
 
 			std::cout << Inverse.M[0][0] << " " << Inverse.M[0][1] << " " << Inverse.M[0][2] << " " << Inverse.M[0][3] << std::endl;
 			std::cout << Inverse.M[1][0] << " " << Inverse.M[1][1] << " " << Inverse.M[1][2] << " " << Inverse.M[1][3] << std::endl;

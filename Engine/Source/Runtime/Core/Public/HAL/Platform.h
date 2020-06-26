@@ -61,4 +61,8 @@ namespace Nexus
 	#define PLATFORM_LITTLE_ENDIAN 0
 #endif
 
+/** Vector intrinsics. */
+#ifndef PLATFORM_ENABLE_VECTORINTRINSICS
+	#define PLATFORM_ENABLE_VECTORINTRINSICS 0
+#endif
 

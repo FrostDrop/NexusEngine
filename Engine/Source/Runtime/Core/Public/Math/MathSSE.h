@@ -58,6 +58,25 @@ namespace Nexus
     #define VectorSwizzle( Vec, X, Y, Z, W )	_mm_shuffle_ps( Vec, Vec, VECTOR_SHUFFLE_MASK(X, Y, Z, W) )
 
     /**
+     * Replicates one element into all four elements and returns the new vector.
+     *
+     * @param Vec			Source vector
+     * @param ElementIndex	Index (0-3) of the element to replicate
+     * @return				VectorRegister( Vec[ElementIndex], Vec[ElementIndex], Vec[ElementIndex], Vec[ElementIndex] )
+     */
+    #define VectorReplicate( Vec, ElementIndex )	_mm_shuffle_ps( Vec, Vec, VECTOR_SHUFFLE_MASK(ElementIndex, ElementIndex, ElementIndex, ElementIndex) )
+
+    /**
+     * Multiplies two vectors (component-wise), adds in the third vector and returns the result.
+     *
+     * @param Vec1	1st vector
+     * @param Vec2	2nd vector
+     * @param Vec3	3rd vector
+     * @return		VectorRegister( Vec1.x*Vec2.x + Vec3.x, Vec1.y*Vec2.y + Vec3.y, Vec1.z*Vec2.z + Vec3.z, Vec1.w*Vec2.w + Vec3.w )
+     */
+    #define VectorMultiplyAdd( Vec1, Vec2, Vec3 )	_mm_add_ps( _mm_mul_ps(Vec1, Vec2), Vec3 )
+
+    /**
      * Returns a bitwise equivalent vector based on 4 DWORDs.
      *
      * @param X		1st uint32 component
@@ -86,6 +105,18 @@ namespace Nexus
     FORCEINLINE VectorRegister MakeVectorRegister(float X, float Y, float Z, float W)
     {
         return _mm_setr_ps(X, Y, Z, W);
+    }
+
+    /**
+     * Returns a vector based on 1 FLOAT.
+     *
+     * @param Value	The value for all 4 components of the vector.
+
+     * @return		Vector of the 4 equal FLOATs
+     */
+    FORCEINLINE VectorRegister MakeVectorRegister(float Value)
+    {
+        return _mm_set1_ps(Value);
     }
 
     /**
