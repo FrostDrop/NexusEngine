@@ -1,8 +1,8 @@
 #!/bin/sh
 
-sudo apt install libx11-dev
-sudo apt install libxcursor-dev
-sudo apt install libxrandr-dev
-sudo apt install libxinerama-dev
-sudo apt install libxinput2-dev
-sudo apt install libxi-dev
+sudo apt-get install libx11-dev
+sudo apt-get install libxcursor-dev
+sudo apt-get install libxrandr-dev
+sudo apt-get install libxinerama-dev
+sudo apt-get install libxinput2-dev
+sudo apt-get install libxi-dev

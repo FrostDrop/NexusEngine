@@ -13,6 +13,10 @@ project "Core"
 		"premake5.lua",
 
 		"Public/**.h",
+		"Public/**.inl",
+
+		"Private/**.h",
+		"Private/**.inl",
 		"Private/**.cpp"
 	}
 

@@ -7,6 +7,8 @@ namespace Nexus
 	struct FLinuxPlatformTypes : public FGenericPlatformTypes
 	{
 
+		using PlatformSizeType = __SIZE_TYPE__;
+
 	};
 
 	using FPlatformTypes = FLinuxPlatformTypes;
