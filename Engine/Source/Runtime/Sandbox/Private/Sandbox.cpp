@@ -6,6 +6,8 @@
 #include "Containers/Array.h"
 #include "Containers/BitArray.h"
 
+#include "Math/Matrix.h"
+
 
 namespace Nexus
 {
@@ -27,8 +29,17 @@ namespace Nexus
 		}
 
 		virtual void Run() override
-    {
-      
+		{
+			TArray<FMatrix> MatrixArray;
+
+			FMatrix Matrix = FMatrix(
+				FVector(2.0f, 0.0f, 0.0f),
+				FVector(0.0f, 4.0f, 0.0f),
+				FVector(0.0f, 0.0f, 3.0f),
+				FVector(0.0f, 0.0f, 0.0f)
+			);
+
+			MatrixArray.Add(Matrix.GetInverse());
 		}
 
 	};
