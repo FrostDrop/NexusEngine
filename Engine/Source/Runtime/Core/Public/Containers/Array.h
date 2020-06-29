@@ -40,16 +40,216 @@ namespace Nexus
 	}
 
 	/**
-	 *
+	 * Generic iterator which can operate on types that expose the following:
+	 * - A type called ElementType representing the contained type.
+	 * - A method SizeType Num() const that returns the number of items in the container.
+	 * - A method bool IsValidIndex(SizeType index) which returns whether a given index is valid in the container.
+	 * - A method T& operator\[\](SizeType index) which returns a reference to a contained object by index.
+	 * - A method void RemoveAt(SizeType index) which removes the element at index
 	 */
-	template<typename FElementType, typename FAllocator = FAnsiAllocator>
-	class TArray
+	template<typename FContainerType, typename FElementType, typename FSizeType>
+	class TIndexedContainerIterator
 	{
+
+	public:
+
+		/**
+		 * Constructor.
+		 */
+		TIndexedContainerIterator(FContainerType& InContainer, FSizeType StartIndex = 0)
+			: Container(InContainer)
+			, Index(StartIndex)
+		{
+		}
+
+		/**
+		 * Pre-Increment operator.
+		 */
+		TIndexedContainerIterator& operator++()
+		{
+			++Index;
+			return *this;
+		}
+
+		/**
+		 * Post-Increment operator.
+		 */
+		TIndexedContainerIterator operator++(int)
+		{
+			TIndexedContainerIterator Tmp(*this);
+			++Index;
+
+			return Tmp;
+		}
+
+		/**
+		 * Pre-Decrement operator.
+		 */
+		TIndexedContainerIterator& operator--()
+		{
+			--Index;
+			return *this;
+		}
+
+		/**
+		 * Post-Decrement operator.
+		 */
+		TIndexedContainerIterator operator--(int)
+		{
+			TIndexedContainerIterator Tmp(*this);
+			--Index;
+
+			return Tmp;
+		}
+
+		/**
+		 *
+		 */
+		TIndexedContainerIterator operator+(FSizeType Offset) const
+		{
+			TIndexedContainerIterator Tmp(*this);
+			return Tmp += Offset;
+		}
+
+		/**
+		 *
+		 */
+		TIndexedContainerIterator& operator+=(FSizeType Offset)
+		{
+			Index += Offset;
+			return *this;
+		}
+
+		/**
+		 *
+		 */
+		TIndexedContainerIterator operator-(FSizeType Offset) const
+		{
+			TIndexedContainerIterator Tmp(*this);
+			return Tmp -= Offset;
+		}
+
+		/**
+		 * 
+		 */
+		TIndexedContainerIterator& operator-=(FSizeType Offset)
+		{
+			return *this += -Offset;
+		}
+
+		/**
+		 * Dereferencing operator.
+		 */
+		FElementType& operator*() const
+		{
+			return Container[Index];
+		}
+
+		/**
+		 * Pointer operator.
+		 */
+		FElementType* operator->() const
+		{
+			return &Container[Index];
+		}
+
+		/**
+		 * Conversion to "bool".
+		 * Returns true if the iterator has not reached the last element.
+		 */
+		FORCEINLINE explicit operator bool() const
+		{
+			return Container.IsValidIndex(Index);
+		}
+
+		/**
+		 * Returns the index to the current element.
+		 */
+		FSizeType GetIndex() const
+		{
+			return Index;
+		}
+
+		/**
+		 * Resets the iterator to the first element.
+		 */
+		void Reset()
+		{
+			Index = 0;
+		}
+
+		/**
+		 * Sets iterator to the last element.
+		 */
+		void SetToEnd()
+		{
+			Index = Container.Num();
+		}
+
+		/**
+		 * Removes current element in array. This invalidates the current iterator value and it must be incremented.
+		 */
+		void RemoveCurrent()
+		{
+			Container.RemoveAt(Index);
+			Index--;
+		}
+
+		/**
+		 * Iterator comparison.
+		 */
+		FORCEINLINE friend bool operator==(const TIndexedContainerIterator& Lhs, const TIndexedContainerIterator& Rhs)
+		{
+			return &Lhs.Container == &Rhs.Container && Lhs.Index == Rhs.Index;
+		}
+
+		/**
+		 * Iterator comparison.
+		 */
+		FORCEINLINE friend bool operator!=(const TIndexedContainerIterator& Lhs, const TIndexedContainerIterator& Rhs)
+		{
+			return &Lhs.Container != &Rhs.Container || Lhs.Index != Rhs.Index;
+		}
 
 	private:
 
+		/**
+		 * The container to iterate over.
+		 */
+		FContainerType& Container;
+
+		/**
+		 * The element index within the container.
+		 */
+		FSizeType Index;
+
+	};
+
+
+	/**
+	 * Iterator + operator, if the iterator is on the right hand side.
+	 */
+	template <typename FContainerType, typename FElementType, typename FSizeType>
+	FORCEINLINE TIndexedContainerIterator<FContainerType, FElementType, FSizeType> operator+(FSizeType Offset, TIndexedContainerIterator<FContainerType, FElementType, FSizeType> Iterator)
+	{
+		return Iterator + Offset;
+	}
+
+
+	/**
+	 *
+	 */
+	template<typename FInElementType, typename FInAllocator = FAnsiAllocator>
+	class TArray
+	{
+
+	public:
+
 		template <typename FOtherElementType, typename FOtherAllocator>
 		friend class TArray;
+
+		using FElementType = FInElementType;
+		using FAllocator = FInAllocator;
 
 		using FSizeType = typename FAllocator::FSizeType;
 
@@ -709,6 +909,17 @@ namespace Nexus
 		}
 
 		/**
+		 * Tests if index is valid, i.e. greater than or equal to zero, and less than the number of elements in the array.
+		 *
+		 * @param Index Index to test.
+		 * @returns True if index is valid. False otherwise.
+		 */
+		FORCEINLINE bool IsValidIndex(FSizeType Index) const
+		{
+			return Index >= 0 && Index < ArrayNum;
+		}
+
+		/**
 		 * Helper function returning the size of the inner type.
 		 *
 		 * @returns Size in bytes of array type.
@@ -1112,6 +1323,33 @@ namespace Nexus
 		{
 			Check(Address < GetData() || Address >= (GetData() + ArrayMax));
 		}
+
+	public:
+
+		// Ranged based for-loop interface.
+
+
+#if NEXUS_DISTRIBUTION
+		using TIteratorType = FElementType*;
+		using TConstIteratorType = const FElementType;
+#else
+		using TIteratorType = TIndexedContainerIterator<TArray, FElementType, FSizeType>;
+		using TConstIteratorType = TIndexedContainerIterator<const TArray, const FElementType, FSizeType>;
+#endif
+
+
+#if NEXUS_DISTRIBUTION
+		FORCEINLINE TIteratorType      begin()			{ return GetData(); }
+		FORCEINLINE TConstIteratorType begin() const	{ return GetData(); }
+		FORCEINLINE TIteratorType      end()			{ return GetData() + ArrayNum; }
+		FORCEINLINE TConstIteratorType end() const		{ return GetData() + ArrayNum; }
+#else
+		FORCEINLINE TIteratorType      begin()			{ return TIteratorType(*this, 0); }
+		FORCEINLINE TConstIteratorType begin() const	{ return TConstIteratorType(*this, 0); }
+		FORCEINLINE TIteratorType      end()			{ return TIteratorType(*this, ArrayNum); }
+		FORCEINLINE TConstIteratorType end() const		{ return TConstIteratorType(*this, ArrayNum); }
+#endif
+
 
 
 	private:

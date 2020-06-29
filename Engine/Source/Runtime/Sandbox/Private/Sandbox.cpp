@@ -33,12 +33,7 @@ namespace Nexus
 
 		virtual void Run() override
 		{
-			FString Message = "Nexus Message";
-			Message += " Haha";
-			Message += 'T';
-
-			Message.InsertAt(0, "What's up! ");
-			std::cout << *Message << std::endl;
+			
 		}
 
 	};

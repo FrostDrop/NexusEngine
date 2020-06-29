@@ -456,6 +456,15 @@ namespace Nexus
 			Check(Data.GetSlack() >= 0);
 		}
 
+	public:
+
+		// Ranged based for-loop interface.
+
+		FORCEINLINE typename TArray<FCharType>::TIteratorType      begin()			{ auto Result = Data.begin();                                   return Result; }
+		FORCEINLINE typename TArray<FCharType>::TConstIteratorType begin() const	{ auto Result = Data.begin();                                   return Result; }
+		FORCEINLINE typename TArray<FCharType>::TIteratorType      end()			{ auto Result = Data.end();   if (Data.Num()) { --Result; }     return Result; }
+		FORCEINLINE typename TArray<FCharType>::TConstIteratorType end() const		{ auto Result = Data.end();   if (Data.Num()) { --Result; }     return Result; }
+
 	private:
 
 		/**
