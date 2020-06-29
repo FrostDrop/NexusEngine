@@ -1,2 +1,2 @@
 #!/bin/sh
-./Engine/Build/Premake/premake5-mac xcode4
+./Engine/Build/Mac/Premake/premake5 xcode4

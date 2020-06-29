@@ -1,2 +1,2 @@
 #!/bin/sh
-./Engine/Build/Premake/premake5 gmake2
+./Engine/Build/Linux/Premake/premake5 gmake2
