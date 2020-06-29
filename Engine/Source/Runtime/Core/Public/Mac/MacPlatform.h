@@ -30,3 +30,6 @@ namespace Nexus
 
 /** Base defines. */
 #define PLATFORM_LITTLE_ENDIAN 1
+
+/** Vector intrinsics. */
+#define PLATFORM_ENABLE_VECTORINTRINSICS 1

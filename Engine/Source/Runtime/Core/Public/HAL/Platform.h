@@ -82,5 +82,7 @@ namespace Nexus
 	#define Assume(...)
 #endif
 
-
-
+/** Vector intrinsics. */
+#ifndef PLATFORM_ENABLE_VECTORINTRINSICS
+	#define PLATFORM_ENABLE_VECTORINTRINSICS 0
+#endif

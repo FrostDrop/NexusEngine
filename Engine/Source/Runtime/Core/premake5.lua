@@ -28,6 +28,8 @@ project "Core"
 		systemversion "latest"
 		cppdialect "C++17"
 
+		vectorextensions "SSE3"
+
 		defines {
 			"NEXUS_PLATFORM_WINDOWS",
 			"NEXUS_BUILD_DLL"
@@ -37,6 +39,8 @@ project "Core"
 		systemversion "latest"
 		cppdialect "C++17"
 
+		vectorextensions "SSE3"
+
 		defines {
 			"NEXUS_PLATFORM_LINUX",
 			"NEXUS_BUILD_DLL"
@@ -45,6 +49,8 @@ project "Core"
 	filter "system:macosx"
 		systemversion "latest"
 		cppdialect "C++17"
+
+		vectorextensions "SSE3"
 
 		defines {
 			"NEXUS_PLATFORM_MAC",

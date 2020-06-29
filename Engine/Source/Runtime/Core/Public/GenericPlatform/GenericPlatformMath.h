@@ -64,6 +64,25 @@ namespace Nexus
 			return powf(A, B); 
 		}
 
+		/**
+		 * Returns value based on comparand. The main purpose of this function is to avoid
+		 * branching based on floating point comparison which can be avoided via compiler
+		 * intrinsics.
+		 *
+		 * Please note that we don't define what happens in the case of NaNs as there might
+		 * be platform specific differences.
+		 *
+		 * @param	Comparand		Comparand the results are based on
+		 * @param	ValueGEZero		Return value if Comparand >= 0
+		 * @param	ValueLTZero		Return value if Comparand < 0
+		 *
+		 * @return	ValueGEZero if Comparand >= 0, ValueLTZero otherwise
+		 */
+		static constexpr FORCEINLINE float FloatSelect(float Comparand, float ValueGEZero, float ValueLTZero)
+		{
+			return Comparand >= 0.f ? ValueGEZero : ValueLTZero;
+		}
+
 	};
 
 }

@@ -356,6 +356,13 @@ namespace Nexus
 		FORCEINLINE bool IsNormalized() const;
 
 		/**
+		 * Checks whether the components of the vector are nearly zero.
+		 *
+		 * @return true if nearly zero, false otherwise.
+		 */
+		FORCEINLINE bool IsNearlyZero(float Tolerance = KINDA_SMALL_NUMBER) const;
+
+		/**
 		 * Normalize this vector in-place if it is larger than a given tolerance. Leaves it unchanged if not.
 		 *
 		 * @param Tolerance Minimum squared length of vector for normalization.
@@ -607,6 +614,13 @@ namespace Nexus
 	FORCEINLINE bool FVector::IsNormalized() const
 	{
 		return (FMath::Abs(1.f - SizeSquared()) < THRESHOLD_VECTOR_NORMALIZED);
+	}
+
+	FORCEINLINE bool FVector::IsNearlyZero(float Tolerance) const
+	{
+		return FMath::Abs(X) <= Tolerance
+			&& FMath::Abs(Y) <= Tolerance
+			&& FMath::Abs(Z) <= Tolerance;
 	}
 
 	FORCEINLINE bool FVector::Normalize(float Tolerance)

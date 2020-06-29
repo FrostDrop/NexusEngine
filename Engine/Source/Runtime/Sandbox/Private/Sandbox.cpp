@@ -6,7 +6,6 @@
 #include "Containers/Array.h"
 #include "Containers/BitArray.h"
 
-#include <vector>
 
 namespace Nexus
 {
@@ -28,15 +27,8 @@ namespace Nexus
 		}
 
 		virtual void Run() override
-		{
-			TBitArray Other = TBitArray(true, 32);
-			TBitArray BitArray = MoveTemp(Other);
-
-			BitArray.Add(false);
-			BitArray.Add(true);
-			BitArray.Add(false);
-
-			std::cout << BitArray.FindLast(false) << std::endl;
+    {
+      
 		}
 
 	};
