@@ -14,8 +14,6 @@ namespace Nexus
 	struct TSignedIntType
 	{
 
-		static_assert(sizeof(NumBytes) == 0, "Cannot select signed int type.");
-
 	};
 
 	template <> struct TSignedIntType<1> { using Type = int8; };
@@ -31,8 +29,6 @@ namespace Nexus
 	template <PlatformSizeType NumBytes>
 	struct TUnsignedIntType
 	{
-
-		static_assert(sizeof(NumBytes) == 0, "Cannot select unsigned int type.");
 
 	};
 
