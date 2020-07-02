@@ -7,6 +7,8 @@
 #include "Containers/BitArray.h"
 #include "Containers/String.h"
 
+#include "Misc/Char.h"
+
 #include <iostream>
 #include <string>
 #include <locale>

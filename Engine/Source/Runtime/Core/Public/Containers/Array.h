@@ -606,6 +606,22 @@ namespace Nexus
 		 * Removes an element (or elements) at given location optionally shrinking
 		 * the array.
 		 *
+		 * @param Index Location in array of the element to remove.
+		 * @param Count (Optional) Number of elements to remove. Default is 1.
+		 * @param bAllowShrinking (Optional) Tells if this call can shrink array if suitable after remove. Default is true.
+		 */
+		template <typename FCountType>
+		FORCEINLINE void RemoveAt(FSizeType Index, FCountType Count, bool bAllowShrinking = true)
+		{
+			static_assert(!TAreTypesEqual<FCountType, bool>::Value, "TArray::RemoveAt: unexpected bool passed as the 'Count' argument.");
+
+			RemoveAtImpl(Index, static_cast<FSizeType>(Count), bAllowShrinking);
+		}
+
+		/**
+		 * Removes an element (or elements) at given location optionally shrinking
+		 * the array.
+		 *
 		 * This version is much more efficient than RemoveAt (O(Count) instead of
 		 * O(ArrayNum)), but does not preserve the order.
 		 *

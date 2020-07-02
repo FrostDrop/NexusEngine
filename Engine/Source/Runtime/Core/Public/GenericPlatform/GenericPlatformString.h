@@ -2,6 +2,7 @@
 
 #include "CoreTypes.h"
 
+#include "Misc/Char.h"
 #include "Templates/EnableIf.h"
 #include "Templates/IsFixedWidthEncoding.h"
 
@@ -39,6 +40,105 @@ namespace Nexus
 		static FORCEINLINE PlatformSizeType Strlen(const WideChar* String)
 		{
 			return wcslen(String);
+		}
+
+		/**
+		 *
+		 */
+		static FORCEINLINE int32 Strcmp(const AnsiChar* Str1, const AnsiChar* Str2)
+		{
+			return strcmp(Str1, Str2);
+		}
+
+		/**
+		 *
+		 */
+		static FORCEINLINE int32 Strncmp(const AnsiChar* Str1, const AnsiChar* Str2, PlatformSizeType Count)
+		{
+			return strncmp(Str1, Str2, Count);
+		}
+
+		/**
+		 *
+		 */
+		static FORCEINLINE int32 Strcmp(const WideChar* Str1, const WideChar* Str2)
+		{
+			return wcscmp(Str1, Str2);
+		}
+
+		/**
+		 *
+		 */
+		static FORCEINLINE int32 Strncmp(const WideChar* Str1, const WideChar* Str2, PlatformSizeType Count)
+		{
+			return wcsncmp(Str1, Str2, Count);
+		}
+
+		/**
+		 *
+		 */
+		template<typename FCharType1, typename FCharType2>
+		static FORCEINLINE int32 Stricmp(const FCharType1* Str1, const FCharType2* Str2)
+		{
+			while (true)
+			{
+				AnsiChar Char1 = *Str1++;
+				AnsiChar Char2 = *Str2++;
+
+				if (Char1 == Char2)
+				{
+					if (Char1)
+					{
+						continue;
+					}
+
+					return 0;
+				}
+				else
+				{
+					int32 Diff = TChar<FCharType1>::ToUnsigned(Char1) - TChar<FCharType2>::ToUnsigned(Char2);
+					if (Diff)
+					{
+						return Diff;
+					}
+				}
+
+			}
+
+			return 0;
+		}
+
+		/**
+		 *
+		 */
+		template<typename FCharType1, typename FCharType2>
+		static FORCEINLINE int32 Strnicmp(const FCharType1* Str1, const FCharType2* Str2, PlatformSizeType Count)
+		{
+			for (; Count > 0; --Count)
+			{
+				FCharType1 Char1 = *Str1++;
+				FCharType2 Char2 = *Str2++;
+
+				if (Char1 == Char2)
+				{
+					if (Char1)
+					{
+						continue;
+					}
+
+					return 0;
+				}
+				else
+				{
+					int32 Diff = TChar<FCharType1>::ToUnsigned(Char1) - TChar<FCharType2>::ToUnsigned(Char2);
+					if (Diff)
+					{
+						return Diff;
+					}
+				}
+			}
+
+			return 0;
 		}
 
 		/**

@@ -17,6 +17,24 @@ namespace Nexus
 	/**
 	 *
 	 */
+	enum class ESearchCase
+	{
+
+		/**
+		 *
+		 */
+		CaseSensitive,
+
+		/**
+		 *
+		 */
+		IgnoreCase,
+
+	};
+
+	/**
+	 *
+	 */
 	template<
 		typename FCharType = TSelectType<
 			PLATFORM_CHAR_IS_CHAR16,
@@ -170,7 +188,7 @@ namespace Nexus
 	public:
 
 		//////////////////////////////////////////////////
-		// Other operators. //////////////////////////////
+		// Binary operators. /////////////////////////////
 		//////////////////////////////////////////////////
 
 		/**
@@ -211,6 +229,12 @@ namespace Nexus
 			Append(String);
 			return *this;
 		}
+
+	public:
+
+		//////////////////////////////////////////////////
+		// Dereferencing operator. ///////////////////////
+		//////////////////////////////////////////////////
 
 		/**
 		 * Get pointer to the string
@@ -316,6 +340,205 @@ namespace Nexus
 					Data.Insert(Characters.Data.GetData(), Characters.Num(), Index);
 				}
 			}
+		}
+
+		/**
+		 * Removes characters within the string.
+		 *
+		 * @param Index           The index of the first character to remove.
+		 * @param Count           The number of characters to remove.
+		 * @param bAllowShrinking Whether or not to reallocate to shrink the storage after removal.
+		 */
+		FORCEINLINE void RemoveAt(uint32 Index, uint32 Count = 1, bool bAllowShrinking = true)
+		{
+			Data.RemoveAt(Index, FMath::Clamp(Count, 0u, Num() - Index), bAllowShrinking);
+		}
+
+	public:
+
+		//////////////////////////////////////////////////
+		// String operations. ////////////////////////////
+		//////////////////////////////////////////////////
+
+		/**
+		 * Test whether this string starts with given string.
+		 *
+		 * @param SearchCase		Indicates whether the search is case sensitive or not ( defaults to ESearchCase::IgnoreCase )
+		 * @return true if this string begins with specified text, false otherwise
+		 */
+		bool StartsWith(const FCharType* InPrefix, ESearchCase SearchCase = ESearchCase::IgnoreCase) const
+		{
+			if (SearchCase == ESearchCase::IgnoreCase)
+			{
+				return InPrefix && *InPrefix && !FPlatformString::Strnicmp(GetData(), InPrefix, FPlatformString::Strlen(InPrefix));
+			}
+			else
+			{
+				return InPrefix && *InPrefix && !FPlatformString::Strncmp(GetData(), InPrefix, FPlatformString::Strlen(InPrefix));
+			}
+		}
+
+		/**
+		 * Test whether this string starts with given string.
+		 *
+		 * @param SearchCase		Indicates whether the search is case sensitive or not ( defaults to ESearchCase::IgnoreCase )
+		 * @return true if this string begins with specified text, false otherwise
+		 */
+		bool StartsWith(const FString& InPrefix, ESearchCase SearchCase = ESearchCase::IgnoreCase) const
+		{
+			if (SearchCase == ESearchCase::IgnoreCase)
+			{
+				return InPrefix.Num() > 0 && !FPlatformString::Strnicmp(GetData(), *InPrefix, InPrefix.Num());
+			}
+			else
+			{
+				return InPrefix.Num() > 0 && !FPlatformString::Strncmp(GetData(), *InPrefix, InPrefix.Num());
+			}
+		}
+
+		/**
+		 * Test whether this string ends with given string.
+		 *
+		 * @param SearchCase		Indicates whether the search is case sensitive or not ( defaults to ESearchCase::IgnoreCase )
+		 * @return true if this string ends with specified text, false otherwise
+		 */
+		bool EndsWith(const FCharType* InSuffix, ESearchCase SearchCase = ESearchCase::IgnoreCase) const
+		{
+			if (!InSuffix || *InSuffix == TInstantiateNullTerminator<FCharType>::Value)
+			{
+				return false;
+			}
+
+			const uint32 Length = Num();
+			const uint32 SuffixLength = static_cast<uint32>(FPlatformString::Strlen(InSuffix));
+
+			if (SuffixLength > Length)
+			{
+				return false;
+			}
+
+			const FCharType* StrPtr = Data.GetData() + Length - SuffixLength;
+
+			if (SearchCase == ESearchCase::IgnoreCase)
+			{
+				return !FPlatformString::Stricmp(StrPtr, InSuffix);
+			}
+			else
+			{
+				return !FPlatformString::Strcmp(StrPtr, InSuffix);
+			}
+		}
+
+		/**
+		 * Test whether this string ends with given string.
+		 *
+		 * @param SearchCase		Indicates whether the search is case sensitive or not ( defaults to ESearchCase::IgnoreCase )
+		 * @return true if this string ends with specified text, false otherwise
+		 */
+		bool EndsWith(const FString& InSuffix, ESearchCase SearchCase = ESearchCase::IgnoreCase) const
+		{
+			if (SearchCase == ESearchCase::IgnoreCase)
+			{
+				return InSuffix.Num() > 0
+					&& Num() >= InSuffix.Num()
+					&& !FPlatformString::Stricmp(&(*this)[Num() - InSuffix.Num()], *InSuffix);
+			}
+			else
+			{
+				return InSuffix.Num() > 0
+					&& Num() >= InSuffix.Num()
+					&& !FPlatformString::Strcmp(&(*this)[Num() - InSuffix.Num()], *InSuffix);
+			}
+		}
+
+		/**
+		 * Removes the text from the start of the string if it exists.
+		 *
+		 * @param InPrefix the prefix to search for at the start of the string to remove.
+		 * @return true if the prefix was removed, otherwise false.
+		 */
+		bool RemoveFromStart(const FCharType* InPrefix, ESearchCase SearchCase = ESearchCase::IgnoreCase)
+		{
+			if (*InPrefix == 0)
+			{
+				return false;
+			}
+
+			if (StartsWith(InPrefix, SearchCase))
+			{
+				RemoveAt(0, static_cast<uint32>(FPlatformString::Strlen(InPrefix)));
+				return true;
+			}
+
+			return false;
+		}
+
+		/**
+		 * Removes the text from the start of the string if it exists.
+		 *
+		 * @param InPrefix the prefix to search for at the start of the string to remove.
+		 * @return true if the prefix was removed, otherwise false.
+		 */
+		bool RemoveFromStart(const FString& InPrefix, ESearchCase SearchCase = ESearchCase::IgnoreCase)
+		{
+			if (InPrefix.IsEmpty())
+			{
+				return false;
+			}
+
+			if (StartsWith(InPrefix, SearchCase))
+			{
+				RemoveAt(0, InPrefix.Num());
+				return true;
+			}
+
+			return false;
+		}
+
+		/**
+		 * Removes the text from the end of the string if it exists.
+		 *
+		 * @param InSuffix the suffix to search for at the end of the string to remove.
+		 * @return true if the suffix was removed, otherwise false.
+		 */
+		bool RemoveFromEnd(const FCharType* InSuffix, ESearchCase SearchCase = ESearchCase::IgnoreCase)
+		{
+			if (*InSuffix == 0)
+			{
+				return false;
+			}
+
+			if (EndsWith(InSuffix, SearchCase))
+			{
+				uint32 SuffixLen = static_cast<uint32>(FPlatformString::Strlen(InSuffix));
+				RemoveAt(Num() - SuffixLen, SuffixLen);
+
+				return true;
+			}
+
+			return false;
+		}
+
+		/**
+		 * Removes the text from the end of the string if it exists.
+		 *
+		 * @param InSuffix the suffix to search for at the end of the string to remove.
+		 * @return true if the suffix was removed, otherwise false.
+		 */
+		bool RemoveFromEnd(const FString& InSuffix, ESearchCase SearchCase = ESearchCase::IgnoreCase)
+		{
+			if (InSuffix.IsEmpty())
+			{
+				return false;
+			}
+
+			if (EndsWith(InSuffix, SearchCase))
+			{
+				RemoveAt(Num() - InSuffix.Num(), InSuffix.Num());
+				return true;
+			}
+
+			return false;
 		}
 
 	public:
