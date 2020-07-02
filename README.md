@@ -21,7 +21,7 @@ Welcome to the Nexus Engine source code!
 5. Open the **Nexus.sln** file with Visual Studio. Select the **Distribution** configuration and build the project. Note, at the time the Nexus Engine only compiles for **64-Bit** systems.
 6. If the compilation finished, hit **F5** to run the Nexus Engine.
 
-### MacOS
+### Mac
 
 1. **Clone** the repository. We recommend the master branch, as it is the most stable one.
 2. Install the latest version of **Xcode**.
@@ -36,5 +36,5 @@ Welcome to the Nexus Engine source code!
 2. Make sure **GNU Make** is installed.
 3. Head over to the project directory and run the **Setup.sh** file.
 4. Run the **GenerateProjectFiles.sh** file. This will generate the project Makefiles.
-5. Open the **Terminal** within the project directory and run **make**.
-6. If the compilation finished, head over to the **binary directory** (Engine/Binaries/Debug-[os-name]-x86_64/), open the terminal and run **./Nexus-Sandbox**.
+5. Open the **Terminal** within the project directory and run **make config=distribution**.
+6. If the compilation finished, head over to the **binary directory** (Engine/Binaries/Distribution-linux-x86_64/), open the terminal and run **./Nexus-Sandbox**.
