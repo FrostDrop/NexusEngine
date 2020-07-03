@@ -35,7 +35,8 @@ namespace Nexus
 
 		virtual void Run() override
 		{
-			
+			FString Result = FString<AnsiChar>::Printf("%d %s", 5, "examples!");
+			std::cout << *Result << std::endl;
 		}
 
 	};

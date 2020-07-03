@@ -142,6 +142,17 @@ namespace Nexus
 		}
 
 		/**
+		 *
+		 */
+		static FORCEINLINE int32 Vsnprintf(AnsiChar* Dst, PlatformSizeType DstSize, const AnsiChar* Fmt, va_list ArgPtr)
+		{
+			int32 Result = vsnprintf(Dst, DstSize, Fmt, ArgPtr);
+			va_end(ArgPtr);
+
+			return Result;
+		}
+
+		/**
 		 * Tests whether a particular character is a valid member of its encoding.
 		 *
 		 * @param Ch The character to test.

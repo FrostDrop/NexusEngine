@@ -24,6 +24,9 @@ namespace Nexus
 
 #define FORCENOINLINE __attribute__ ((noinline))
 
+/** Function type macros. */
+#define VARARGS
+
 /** DLL definitions. */
 #define DLLIMPORT __attribute__((visibility("default")))
 #define DLLEXPORT __attribute__((visibility("default")))

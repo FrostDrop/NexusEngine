@@ -67,6 +67,11 @@ namespace Nexus
 	#define FORCENOINLINE
 #endif
 
+/** Function type macros. */
+#ifndef VARARGS
+	#define VARARGS
+#endif
+
 /** Restrict. */
 #ifndef RESTRICT
 	#define RESTRICT __restrict

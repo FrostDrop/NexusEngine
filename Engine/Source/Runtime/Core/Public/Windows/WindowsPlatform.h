@@ -21,6 +21,9 @@ namespace Nexus
 #define FORCEINLINE __forceinline
 #define FORCENOINLINE __declspec(noinline)
 
+/** Function type macros. */
+#define VARARGS __cdecl
+
 /** DLL definitions. */
 #define DLLIMPORT __declspec(dllimport)
 #define DLLEXPORT __declspec(dllexport)

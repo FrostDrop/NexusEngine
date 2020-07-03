@@ -2,11 +2,14 @@
 
 #include "CoreTypes.h"
 
+#include "Templates/AndOrNot.h"
 #include "Templates/IsCharType.h"
 #include "Templates/SelectType.h"
 #include "Templates/IsTriviallyCopyAssignable.h"
 #include "Templates/InstantiateEmptyString.h"
 #include "Templates/InstantiateNullTerminator.h"
+#include "Templates/IsArrayOrRefTypeOf.h"
+#include "Templates/IsValidVariadicFunctionArg.h"
 
 #include "Array.h"
 
@@ -115,6 +118,53 @@ namespace Nexus
 		 *
 		 */
 		FString(FString&&) = default;
+
+	public:
+
+		/**
+		 * Constructs FString object similarly to how classic sprintf works.
+		 *
+		 * @param Format	Format string that specifies how FString should be built optionally using additional args. Refer to standard printf format.
+		 * @param ...		Depending on format function may require additional arguments to build output object.
+		 *
+		 * @returns FString object that was constructed using format and additional parameters.
+		 */
+		template<typename FFmtType, typename... FTypes>
+		static FString Printf(const FFmtType& Fmt, FTypes... Args)
+		{
+			static_assert(TIsArrayOrRefTypeOf<FFmtType, FCharType>::Value, "Formatting string must equal the char type of the string.");
+			static_assert(TAnd<TIsValidVariadicFunctionArg<FTypes>...>::Value, "Invalid arguments passed to FString::Printf.");
+
+			return PrintfImpl(Fmt, Args...);
+		}
+
+	private:
+
+		/**
+		 *
+		 */
+		static FString VARARGS PrintfImpl(const FCharType* Fmt, ...)
+		{
+			FString Result;
+			
+			va_list ArgList;
+			va_start(ArgList, Fmt);
+
+			int32 BufferSize = FPlatformString::Vsnprintf(NULL, 0, Fmt, ArgList);
+			if (BufferSize == -1)
+			{
+				return Result;
+			}
+
+			BufferSize += 1;
+			Result.Data.AddUninitialized(BufferSize);
+
+			FPlatformString::Vsnprintf(Result.Data.GetData(), BufferSize, Fmt, ArgList);
+			va_end(ArgList);
+
+			Result.CheckInvariants();
+			return Result;
+		}
 
 	public:
 
